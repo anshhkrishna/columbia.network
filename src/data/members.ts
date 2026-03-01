@@ -91,7 +91,7 @@ export const members: Member[] = [
     verticals: [],
     twitter: "https://x.com/anshhkrishna",
     linkedin: "https://linkedin.com/in/ansh-krishna",
-    connections: [],
+    connections: ["manas-chan"],
   },
   {
     id: "alex-jerpelea",
@@ -102,6 +102,14 @@ export const members: Member[] = [
     verticals: [],
     twitter: "https://x.com/alexjerpelea",
     linkedin: "https://www.linkedin.com/in/alexandru-iulius-jerpelea-5828b2181/",
+    connections: ["ansh-krishna"],
+  },
+
+  {
+    id: "manas-chan",
+    name: "Manas Chan",
+    program: "Computer Engineering",
+    linkedin: "https://www.linkedin.com/in/manas-chan/",
     connections: ["ansh-krishna"],
   },
 
