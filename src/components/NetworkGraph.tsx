@@ -129,9 +129,9 @@ export default function NetworkGraph({ members, connections, highlightedMemberId
                 line.setAttribute('y1', y1.toString());
                 line.setAttribute('x2', x2.toString());
                 line.setAttribute('y2', y2.toString());
-                line.setAttribute('stroke', isDark ? '#404040' : '#333');
-                line.setAttribute('stroke-width', '1');
-                line.setAttribute('opacity', '0.3');
+                line.setAttribute('stroke', isDark ? '#888' : '#555');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('opacity', '0.6');
                 svg.appendChild(line);
             }
         });

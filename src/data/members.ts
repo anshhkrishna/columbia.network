@@ -96,6 +96,7 @@ export const members: Member[] = [
   {
     id: "alex-jerpelea",
     name: "Alex Jerpelea",
+    website: "",
     program: "CS + Applied Maths",
     roles: ["engineering"],
     verticals: [],
