@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/embed.js": {
+      "includeFiles": "webring.js"
+    }
+  }
+}

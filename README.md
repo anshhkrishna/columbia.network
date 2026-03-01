@@ -37,6 +37,8 @@ Add this before `</body>` on your site. We detect your page from your URL in the
 <script src="https://columbia.network/webring.js" async></script>
 ```
 
+Or use the API route (same script, with cache + CORS headers): `https://columbia.network/api/embed`
+
 **Optional:** Add `data-member-id="your-id"` if we can’t detect your site (e.g. staging URL). Add `data-theme="light"` for a light bar on light backgrounds.
 
 **What it does:** Center shows the Columbia crest (links to columbia.network). Arrows are prev/next in the ring. Swipe or use arrow keys on the bar.
