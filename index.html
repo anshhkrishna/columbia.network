@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>columbia.network</title>
+  <meta name="description" content="The official webring for Columbia University students." />
+  <style>
+    :root {
+      --background: #000000;
+      --foreground: #ededed;
+      --secondary: #a0a0a0;
+      --tertiary: #707070;
+      --border: #2a2a2a;
+      --border-light: #1a1a1a;
+      --card-bg: #141414;
+      --input-bg: #1a1a1a;
+      --hover-bg: #1f1f1f;
+      --hover-color: #1d4ed8;
+    }
+
+    * { box-sizing: border-box; padding: 0; margin: 0; }
+
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 17px;
+      background: var(--background);
+      color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .main-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 4rem;
+      gap: 4rem;
+      position: relative;
+      overflow: visible;
+    }
+
+    .watermark {
+      position: fixed;
+      top: 8rem;
+      left: 82%;
+      transform: translateX(-50%);
+      opacity: 0.28;
+      z-index: 0;
+      pointer-events: none;
+      background: var(--background);
+    }
+
+    .watermark img {
+      display: block;
+      width: 840px;
+      height: auto;
+    }
+
+    @media (min-width: 1024px) {
+      .main-container {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 800px;
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      font-size: 2.75rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .join-link {
+      text-decoration: underline;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--foreground);
+    }
+
+    .join-link:hover { color: var(--hover-color); }
+
+    .search-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: var(--input-bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+      color: var(--secondary);
+    }
+
+    .search-bar-container svg.search-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      color: var(--tertiary);
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1.05rem;
+      background: transparent;
+      color: var(--foreground);
+      font-family: inherit;
+    }
+
+    .search-input::placeholder { color: var(--tertiary); }
+
+    .search-clear-btn {
+      background: none;
+      border: none;
+      color: var(--secondary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.5rem;
+      transition: color 0.2s;
+      font-family: inherit;
+    }
+
+    .search-clear-btn:hover { color: var(--foreground); }
+
+    .search-results-info {
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      color: var(--secondary);
+      font-weight: 500;
+    }
+
+    .members-table-container { width: 100%; overflow-x: auto; }
+
+    .members-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      table-layout: fixed;
+    }
+
+    .members-table th {
+      font-weight: 500;
+      font-size: 1.25rem;
+      padding-bottom: 1.5rem;
+      padding-right: 1rem;
+      color: var(--foreground);
+    }
+
+    .members-table th:nth-child(1) { width: 26%; }
+    .members-table th:nth-child(2) { width: 24%; }
+    .members-table th:nth-child(3) { width: 26%; }
+    .members-table th:nth-child(4) { width: 20%; padding-left: 1rem; }
+
+    .members-table td {
+      padding: 1rem 1rem 1rem 0;
+      font-size: 1.05rem;
+      color: var(--foreground);
+      vertical-align: middle;
+    }
+
+    .members-table td:nth-child(4) { padding-left: 1rem; padding-right: 2rem; }
+
+    .name-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .name-cell .avatar,
+    .name-cell .avatar-fallback {
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .members-table .avatar-fallback {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-family: 'Times New Roman', Times, serif;
+      color: var(--tertiary);
+      font-weight: 600;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      min-height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      object-fit: cover;
+      filter: grayscale(100%);
+      transition: filter 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .members-table tbody tr:hover .avatar { filter: grayscale(0%); }
+
+    .site-link, .name-link {
+      color: var(--foreground);
+      transition: opacity 0.2s;
+    }
+
+    .site-link:hover, .name-link:hover { color: var(--hover-color); }
+
+    .table-placeholder { color: var(--tertiary); font-size: 0.9rem; }
+
+    .social-icons {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      min-height: 20px;
+      padding: 0.25rem 0;
+    }
+
+    .social-icon-link {
+      color: var(--foreground);
+      transition: opacity 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      text-decoration: none;
+      padding: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .social-icon-link svg {
+      display: block !important;
+      width: 16px !important;
+      height: 16px !important;
+      fill: currentColor !important;
+    }
+
+    .social-icon-link:hover { color: var(--hover-color); }
+
+    .graph-section {
+      flex: 1;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      opacity: 0.95;
+      position: relative;
+      overflow: visible;
+      z-index: 1;
+      min-width: 0;
+    }
+
+    @media (min-width: 1024px) {
+      .graph-section {
+        position: sticky;
+        top: 0;
+        align-self: flex-start;
+      }
+    }
+
+    .network-graph-wrapper {
+      position: relative;
+      border-radius: 8px;
+      overflow: visible;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid var(--border);
+      min-height: 380px;
+      flex: 1;
+      width: 100%;
+      z-index: 1;
+    }
+
+    .network-graph-container {
+      position: relative;
+      overflow: visible;
+      min-height: 380px;
+      flex: 1;
+      width: 100%;
+      z-index: 1;
+    }
+
+    @media (min-width: 1024px) {
+      .network-graph-container {
+        height: 60vh;
+        max-height: 600px;
+      }
+    }
+
+    .graph-node {
+      position: absolute;
+      cursor: pointer;
+      user-select: none;
+      transition: left 0.2s ease, top 0.2s ease;
+      transform: translate(-50%, -50%);
+    }
+
+    .graph-node img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(100%);
+      transition: filter 0.3s ease;
+    }
+
+    .graph-node:hover img { filter: grayscale(0%); }
+
+    .graph-node .node-fallback {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--tertiary);
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .main-container { padding: 2rem; gap: 2rem; }
+      .content-wrapper { gap: 2rem; }
+      .title { font-size: 1.8rem; }
+      .title-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .graph-section { max-width: 100%; order: 2; }
+      .content-wrapper { order: 1; }
+      .network-graph-wrapper { min-height: 320px; }
+      .network-graph-container { min-height: 320px; }
+      .members-table { table-layout: auto; }
+      .members-table th, .members-table td { padding-right: 1rem; font-size: 1rem; }
+      .members-table th { font-size: 1.1rem; padding-bottom: 1rem; }
+    }
+
+    @media (max-width: 480px) {
+      .main-container { padding: 1.25rem; gap: 1.5rem; }
+      .content-wrapper { gap: 1.5rem; }
+      .title { font-size: 1.5rem; }
+      .description { font-size: 1rem; }
+      .github-link { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+      .members-table th:nth-child(4), .members-table td:nth-child(4) { display: none; }
+      .members-table th, .members-table td { padding: 0.75rem 0.5rem 0.75rem 0; font-size: 0.95rem; }
+      .members-table th:nth-child(1), .members-table td:nth-child(1) { padding-left: 0.25rem; }
+      .members-table th { font-size: 0.9rem; padding-bottom: 0.75rem; }
+      .members-table th:nth-child(5), .members-table td:nth-child(5) { padding-left: 0.5rem; padding-right: 0.25rem; }
+      .avatar { width: 28px; height: 28px; min-width: 28px; min-height: 28px; }
+      .search-bar-container { padding: 0.6rem 0.8rem; }
+      .search-input { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="content-wrapper">
+      <header class="header-section">
+        <div class="title-row">
+          <h1 class="title">columbia.network</h1>
+        </div>
+        <div class="description">
+          <p>welcome to the official webring for columbia university students.</p>
+          <p>columbia packs an unusually high density of talented engineers, designers, creators, and researchers into one campus in the middle of new york city. this is the place to find the people doing things.</p>
+          <p>want to join? <a href="https://github.com/anshkrishna/columbia.network#join-the-webring" target="_blank" rel="noopener noreferrer" class="join-link">submit a pull request</a></p>
+        </div>
+      </header>
+
+      <div class="members-table-container">
+        <table class="members-table" id="member-table">
+          <thead>
+            <tr>
+              <th>name</th>
+              <th>major</th>
+              <th>site</th>
+              <th>links</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="graph-section">
+      <div class="watermark" aria-hidden="true">
+        <img src="./assets/watermark.png" alt="" />
+      </div>
+      <div class="search-bar-container">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="search-input" class="search-input" placeholder="Search members..." autocomplete="off" />
+        <button type="button" id="search-clear" class="search-clear-btn" style="display: none;">Clear</button>
+      </div>
+      <p class="search-results-info" id="search-results-info"></p>
+      <div class="network-graph-wrapper">
+        <div class="network-graph-container" id="network-graph"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GITHUB_REPO = 'https://github.com/anshkrishna/columbia.network';
+
+    let members = [];
+    let shuffledMembers = [];
+    let filteredMembers = [];
+    let connections = [];
+
+    function slug(name) {
+      return (name || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    }
+
+    function ensureIds(list) {
+      const idSet = new Set();
+      return list.map(m => {
+        const id = m.id || slug(m.name);
+        let uniqueId = id;
+        let n = 0;
+        while (idSet.has(uniqueId)) uniqueId = id + (++n);
+        idSet.add(uniqueId);
+        return { ...m, id: uniqueId };
+      });
+    }
+
+    function getConnections(list) {
+      const ids = new Set(list.map(m => m.id));
+      const conns = [];
+      list.forEach(m => {
+        (m.connections || []).forEach(toId => {
+          if (ids.has(toId)) conns.push({ fromId: m.id, toId });
+        });
+      });
+      return conns;
+    }
+
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    async function loadMembers() {
+      const res = await fetch('./sites.json');
+      const raw = await res.json();
+      members = ensureIds(raw);
+      connections = getConnections(members);
+      shuffledMembers = shuffleArray(members);
+      filteredMembers = [...shuffledMembers];
+      renderTable(filteredMembers);
+      renderGraph(filteredMembers, connections);
+      updateSearchInfo(filteredMembers.length, '');
+      const searchEl = document.getElementById('search-input');
+      document.getElementById('search-clear').style.display = searchEl.value.trim() ? 'block' : 'none';
+    }
+
+    function updateSearchInfo(count, query) {
+      const el = document.getElementById('search-results-info');
+      const clear = document.getElementById('search-clear');
+      if (!query) {
+        el.textContent = '';
+        if (clear) clear.style.display = 'none';
+        return;
+      }
+      if (clear) clear.style.display = 'block';
+      if (count === 0) el.textContent = `No results found for "${query}"`;
+      else el.textContent = `Found ${count} member${count !== 1 ? 's' : ''}`;
+    }
+
+    function avatarUrl(m) {
+      if (m.avatar && m.avatar.trim()) return m.avatar.trim();
+      return null;
+    }
+
+    function initials(name) {
+      return (name || '').split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+    }
+
+    const ICONS = {
+      twitter: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+      linkedin: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>',
+      instagram: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>',
+      github: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>'
+    };
+
+    function socialLinks(m) {
+      const links = [];
+      if (m.twitter) links.push({ key: 'twitter', url: m.twitter.startsWith('http') ? m.twitter : `https://twitter.com/${m.twitter}`, title: 'Twitter' });
+      if (m.linkedin) links.push({ key: 'linkedin', url: m.linkedin.startsWith('http') ? m.linkedin : `https://linkedin.com/in/${m.linkedin}`, title: 'LinkedIn' });
+      if (m.instagram) links.push({ key: 'instagram', url: m.instagram.startsWith('http') ? m.instagram : `https://instagram.com/${m.instagram}`, title: 'Instagram' });
+      if (m.github) links.push({ key: 'github', url: `https://github.com/${m.github}`, title: 'GitHub' });
+      return links;
+    }
+
+    function renderTable(list) {
+      const tbody = document.querySelector('#member-table tbody');
+      tbody.innerHTML = '';
+      list.forEach(m => {
+        const tr = document.createElement('tr');
+
+        const tdName = document.createElement('td');
+        tdName.className = 'name-cell';
+        const avatar = avatarUrl(m);
+        if (avatar) {
+          const img = document.createElement('img');
+          img.src = avatar;
+          img.alt = m.name;
+          img.className = 'avatar';
+          img.onerror = () => {
+            const fb = document.createElement('div');
+            fb.className = 'avatar-fallback';
+            fb.textContent = initials(m.name);
+            tdName.replaceChild(fb, img);
+          };
+          tdName.appendChild(img);
+        } else {
+          const fb = document.createElement('div');
+          fb.className = 'avatar-fallback';
+          fb.textContent = initials(m.name);
+          tdName.appendChild(fb);
+        }
+        const nameSpan = document.createElement(m.site ? 'a' : 'span');
+        nameSpan.className = m.site ? 'name-link' : '';
+        if (m.site) {
+          nameSpan.href = m.site;
+          nameSpan.target = '_blank';
+          nameSpan.rel = 'noopener noreferrer';
+        }
+        nameSpan.textContent = m.name || '—';
+        tdName.appendChild(nameSpan);
+        tr.appendChild(tdName);
+
+        const tdMajor = document.createElement('td');
+        tdMajor.textContent = (m.major != null && m.major !== '') ? m.major : (m.program || '—');
+        tr.appendChild(tdMajor);
+
+        const tdSite = document.createElement('td');
+        if (m.site && m.site.trim()) {
+          const a = document.createElement('a');
+          a.href = m.site;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.className = 'site-link';
+          a.textContent = m.site.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
+          tdSite.appendChild(a);
+        } else tdSite.innerHTML = '<span class="table-placeholder">—</span>';
+        tr.appendChild(tdSite);
+
+        const tdLinks = document.createElement('td');
+        tdLinks.className = 'social-icons';
+        const sl = socialLinks(m);
+        if (sl.length) sl.forEach(({ key, url, title }) => {
+          const a = document.createElement('a');
+          a.className = 'social-icon-link';
+          a.href = url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.title = title;
+          a.innerHTML = ICONS[key];
+          tdLinks.appendChild(a);
+        });
+        else tdLinks.innerHTML = '<span class="table-placeholder">—</span>';
+        tr.appendChild(tdLinks);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderGraph(list, conns) {
+      const container = document.getElementById('network-graph');
+      container.innerHTML = '';
+      const width = container.clientWidth || 400;
+      const height = container.clientHeight || 400;
+      const idToIndex = {};
+      list.forEach((m, i) => { idToIndex[m.id] = i; });
+
+      const filteredConns = conns.filter(c => idToIndex[c.fromId] != null && idToIndex[c.toId] != null);
+
+      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+      const nodes = list.map((m, i) => {
+        const radius = Math.sqrt(i + 0.5) * (Math.min(width, height) / (2.5 * Math.sqrt(Math.max(list.length, 1))));
+        const angle = i * goldenAngle;
+        return {
+          id: m.id,
+          name: m.name,
+          website: m.site,
+          x: width / 2 + radius * Math.cos(angle),
+          y: height / 2 + radius * Math.sin(angle),
+          member: m
+        };
+      });
+
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+      svg.style.position = 'absolute';
+      svg.style.top = '0';
+      svg.style.left = '0';
+      svg.style.pointerEvents = 'none';
+      filteredConns.forEach(c => {
+        const from = nodes.find(n => n.id === c.fromId);
+        const to = nodes.find(n => n.id === c.toId);
+        if (from && to) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', from.x);
+          line.setAttribute('y1', from.y);
+          line.setAttribute('x2', to.x);
+          line.setAttribute('y2', to.y);
+          line.setAttribute('stroke', '#404040');
+          line.setAttribute('stroke-width', '1');
+          line.setAttribute('opacity', '0.3');
+          svg.appendChild(line);
+        }
+      });
+      container.appendChild(svg);
+
+      nodes.forEach(node => {
+        const div = document.createElement('div');
+        div.className = 'graph-node';
+        div.style.left = node.x + 'px';
+        div.style.top = node.y + 'px';
+        div.title = node.name || '';
+
+        const url = avatarUrl(node.member);
+        if (url) {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = node.name || '';
+          img.onerror = () => {
+            const fb = document.createElement('div');
+            fb.className = 'node-fallback';
+            fb.textContent = initials(node.name);
+            div.replaceChild(fb, img);
+          };
+          div.appendChild(img);
+        } else {
+          const fb = document.createElement('div');
+          fb.className = 'node-fallback';
+          fb.textContent = initials(node.name);
+          div.appendChild(fb);
+        }
+
+        if (node.website) div.onclick = () => window.open(node.website, '_blank', 'noopener');
+        container.appendChild(div);
+      });
+    }
+
+    document.getElementById('search-input').addEventListener('input', function() {
+      const q = this.value.trim();
+      const qLower = q.toLowerCase();
+      filteredMembers = q
+        ? shuffledMembers.filter(m =>
+            (m.name || '').toLowerCase().includes(qLower) ||
+            (m.major || m.program || '').toLowerCase().includes(qLower) ||
+            (m.site || '').toLowerCase().includes(qLower)
+          )
+        : [...shuffledMembers];
+      const filteredIds = new Set(filteredMembers.map(m => m.id));
+      const filteredConns = connections.filter(c => filteredIds.has(c.fromId) && filteredIds.has(c.toId));
+      renderTable(filteredMembers);
+      renderGraph(filteredMembers, filteredConns);
+      updateSearchInfo(filteredMembers.length, q);
+      document.getElementById('search-clear').style.display = q ? 'block' : 'none';
+    });
+
+    document.getElementById('search-clear').addEventListener('click', function() {
+      document.getElementById('search-input').value = '';
+      document.getElementById('search-input').dispatchEvent(new Event('input'));
+    });
+
+    loadMembers();
+  </script>
+</body>
+</html>
