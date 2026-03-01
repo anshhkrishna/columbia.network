@@ -1,4 +1,4 @@
-# columbia.network 🦁
+# columbia.network
 
 The official webring for Columbia University students. Run by [anshkrishna.com](https://anshkrishna.com).
 
@@ -33,7 +33,7 @@ The official webring for Columbia University students. Run by [anshkrishna.com](
 - **connections**: List of member `id`s (e.g. `"ansh-krishna"`). Lines in the network graph are drawn between you and everyone in your `connections` list — add friends/people you know in the webring.
 
 3. **Submit a pull request** titled: `Add [Your Name] to columbia.network`  
-4. Done 🎉
+4. Done.
 
 ## Add the widget to your site
 
@@ -67,11 +67,3 @@ Replace `your-id-from-sites.json` with the `id` you used in `sites.json` (e.g. `
 **Customize:** `data-theme` can be `"dark"` or `"light"` to match your site.
 
 Linking to https://columbia.network and mentioning the webring is still totally fine if you don’t want to embed anything.
-
-## Tech
-
-Static HTML + vanilla JS. No framework. No build step.
-
----
-
-made with ❤️ by [ansh](https://anshkrishna.com)
