@@ -15,5 +15,12 @@
     "major": "Computer Engineering",
     "site": "https://www.linkedin.com/in/manas-chan/",
     "connections": ["ansh-krishna"]
+  },
+  {
+  "id": "alex-jerpelea",
+  "name": "Alex Jerpelea",
+  "major": "CS and Applied Maths",
+  "site": "https://www.linkedin.com/in/alexandru-iulius-jerpelea-5828b2181/",
+  "connections": ["ansh-krishna"]
   }
 ]
