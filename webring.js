@@ -27,6 +27,9 @@
     script.getAttribute('data-sites-url') ||
     'https://columbia.network/sites.json';
 
+  var baseUrl = 'https://columbia.network';
+  var logoUrl = baseUrl + '/assets/crest.png';
+
   function createContainer() {
     var targetId =
       dataset.targetId || script.getAttribute('data-target-id') || '';
@@ -154,7 +157,20 @@
     container.innerHTML = '';
 
     if (!members || !members.length) {
-      container.textContent = 'columbia.network';
+      container.textContent = '';
+      var emptyLink = document.createElement('a');
+      emptyLink.href = baseUrl;
+      emptyLink.setAttribute('aria-label', 'Visit columbia.network');
+      styleLink(emptyLink, true);
+      var emptyImg = document.createElement('img');
+      emptyImg.src = logoUrl;
+      emptyImg.alt = 'columbia.network';
+      emptyImg.style.height = '24px';
+      emptyImg.style.width = 'auto';
+      emptyImg.style.display = 'block';
+      if (theme === 'light') emptyImg.style.filter = 'invert(1)';
+      emptyLink.appendChild(emptyImg);
+      container.appendChild(emptyLink);
       return;
     }
 
@@ -175,11 +191,22 @@
     styleLink(prevLink, false);
 
     var centerLink = document.createElement('a');
-    centerLink.href = 'https://columbia.network';
-    centerLink.textContent = 'columbia.network';
+    centerLink.href = baseUrl;
     centerLink.setAttribute('aria-label', 'Visit columbia.network');
     styleLink(centerLink, true);
     centerLink.style.fontWeight = '500';
+    centerLink.style.padding = '0.25rem 0.5rem';
+    var logoImg = document.createElement('img');
+    logoImg.src = logoUrl;
+    logoImg.alt = 'columbia.network';
+    logoImg.style.height = '24px';
+    logoImg.style.width = 'auto';
+    logoImg.style.display = 'block';
+    logoImg.style.pointerEvents = 'none';
+    if (theme === 'light') {
+      logoImg.style.filter = 'invert(1)';
+    }
+    centerLink.appendChild(logoImg);
 
     var nextLink = document.createElement('a');
     nextLink.href = next.site || 'https://columbia.network';
@@ -244,13 +271,34 @@
         .catch(function () {
           container.textContent = '';
           var link = document.createElement('a');
-          link.href = 'https://columbia.network';
-          link.textContent = 'columbia.network';
+          link.href = baseUrl;
+          link.setAttribute('aria-label', 'Visit columbia.network');
           styleLink(link, true);
+          var fallbackImg = document.createElement('img');
+          fallbackImg.src = logoUrl;
+          fallbackImg.alt = 'columbia.network';
+          fallbackImg.style.height = '24px';
+          fallbackImg.style.width = 'auto';
+          fallbackImg.style.display = 'block';
+          if (theme === 'light') fallbackImg.style.filter = 'invert(1)';
+          link.appendChild(fallbackImg);
           container.appendChild(link);
         });
     } catch (e) {
-      container.textContent = 'columbia.network';
+      container.innerHTML = '';
+      var errLink = document.createElement('a');
+      errLink.href = baseUrl;
+      errLink.setAttribute('aria-label', 'Visit columbia.network');
+      styleLink(errLink, true);
+      var errImg = document.createElement('img');
+      errImg.src = logoUrl;
+      errImg.alt = 'columbia.network';
+      errImg.style.height = '24px';
+      errImg.style.width = 'auto';
+      errImg.style.display = 'block';
+      if (theme === 'light') errImg.style.filter = 'invert(1)';
+      errLink.appendChild(errImg);
+      container.appendChild(errLink);
     }
   }
 

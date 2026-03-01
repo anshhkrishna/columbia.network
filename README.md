@@ -31,17 +31,12 @@ Title: `Add [Your Name] to columbia.network`
 
 ## Add the Widget to Your Site
 
+Add this before `</body>` on your site. We detect your page from your URL in the webring, so no config required.
+
 ```html
-<script
-  async
-  src="https://columbia.network/webring.js"
-  data-member-id="your-name"
-  data-theme="dark">
-</script>
+<script src="https://columbia.network/webring.js" async></script>
 ```
 
-**What it does:**  
-- Center link → [columbia.network](https://columbia.network)  
-- Arrows → prev/next member sites in the ring (swipe or arrow keys on the bar)
+**Optional:** Add `data-member-id="your-id"` if we can’t detect your site (e.g. staging URL). Add `data-theme="light"` for a light bar on light backgrounds.
 
-**Customize:** `data-theme="dark"` or `"light"` to match your site.
+**What it does:** Center shows the Columbia crest (links to columbia.network). Arrows are prev/next in the ring. Swipe or use arrow keys on the bar.
