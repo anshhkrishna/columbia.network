@@ -26,12 +26,14 @@ Use a square image URL in the `avatar` field in your entry (optional). If you do
 
 Optional fields: `id`, `avatar`, `github`, `twitter`, `linkedin`, `instagram`, `connections` (member ids for graph edges).
 
-**3. Submit a pull request**
+**3. Submit a pull request**  
+Title: `Add [Your Name] to columbia.network`
 
 ## Add the Widget to Your Site
 
 ```html
 <script
+  async
   src="https://columbia.network/webring.js"
   data-member-id="your-name"
   data-theme="dark">
