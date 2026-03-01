@@ -14,7 +14,7 @@ interface Node {
     id: string;
     name: string | null;
     profilePic: string | undefined;
-    website: string | null;
+    website: string | null | undefined;
     x: number;
     y: number;
 }

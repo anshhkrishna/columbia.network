@@ -34,7 +34,7 @@
 export interface Member {
   id: string;
   name: string;
-  website: string;
+  website?: string;
   program?: string;
   year?: string;
   roles?: string[];
