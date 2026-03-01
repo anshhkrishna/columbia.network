@@ -9,4 +9,12 @@
     "instagram": "",
     "connections": []
   }
+
+  {
+    "id": "manas-chan",
+    "name": "Manas Chan",
+    "major": "Computer Engineering",
+    "site": "https://www.linkedin.com/in/manas-chan/",
+    "connections": ["ansh-krishna"]
+  }
 ]
