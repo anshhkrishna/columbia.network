@@ -112,13 +112,12 @@ export default function SearchableContent({ members, connections }: SearchableCo
                             this is the place to find the people doing things.
                         </p>
                         <p>
-                            want to join? <a 
-                                href="https://github.com/anshhkrishna/columbia.network#join-the-webring" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
+                            want to join?{" "}
+                            <a
+                                href="/join"
                                 className="join-link"
                             >
-                                submit a pull request
+                                fill out the form
                             </a>
                         </p>
                     </div>
