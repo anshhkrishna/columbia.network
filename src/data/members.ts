@@ -115,6 +115,14 @@ export const members: Member[] = [
     connections: ["ansh-krishna"],
   },
 
+  {
+    id: "ravin-chutijirawong",
+    name: "Ravin Chutijirawong",
+    program: "Computational Biology + Economics",
+    linkedin: "https://www.linkedin.com/in/ravin-chutijirawong-5b8700350/",
+    connections: ["ansh-krishna", "alex-jerpelea"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
