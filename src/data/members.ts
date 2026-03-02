@@ -1,11 +1,13 @@
 /**
  * COLUMBIA WEBRING MEMBERS
  * 
- * To add yourself to the webring:
- * 1. Fork this repository
- * 2. Add your profile picture to /public/photos/ (see below)
- * 3. Add your entry to the members array below
- * 4. Submit a pull request
+ * To add yourself to the webring as a member:
+ * 1. Fill out the public join form at https://columbia.network/join
+ * 2. We'll review and then add your entry to the members array below
+ *
+ * If you're working on the project locally and want to test things:
+ * 1. Add your profile picture to /public/photos/ (see below)
+ * 2. Add your entry to the members array below
  * 
  * Required fields:
  * - id: Your name with hyphens (e.g., "john-doe")

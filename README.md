@@ -45,4 +45,6 @@ public/photos/your-name.jpg
 
 **Connections:** To link yourself to someone on the constellation map, add their ID to your `connections` array. You can find everyone's ID by visiting [columbia.network](https://columbia.network) or by looking at existing entries in `src/data/members.ts`. IDs are lowercase with hyphens (e.g. `"ansh-krishna"`).
 
-**3. Submit a pull request**
+**3. Fill out the join form**
+
+Once you've added yourself locally (or even if you haven't), fill out the form at [columbia.network/join](https://columbia.network/join). We'll review submissions and update the graph + directory manually so you don't have to open a PR.
