@@ -285,7 +285,7 @@ export const members: Member[] = [
     profilePic: "/photos/jonathan-wang.png",
     linkedin: "https://www.linkedin.com/in/jonathanwang10/",
     twitter: "https://x.com/jonathan10wang",
-    connections: [],
+    connections: ["ansh-krishna", "armaan-agrawal", "alex-jerpelea", "sid-rout"],
   },
 
   // ============================================
