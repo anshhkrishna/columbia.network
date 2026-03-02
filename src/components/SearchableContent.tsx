@@ -206,11 +206,12 @@ export default function SearchableContent({ members, connections }: SearchableCo
                     )}
                 </div>
 
-                <NetworkGraph 
-                    members={members} 
-                    connections={connections} 
+                <NetworkGraph
+                    members={members}
+                    connections={connections}
                     highlightedMemberIds={filteredMembers.map(m => m.id)}
                     searchQuery={searchQuery}
+                    onNodeClick={(firstName) => setSearchQuery(firstName)}
                 />
             </div>
 

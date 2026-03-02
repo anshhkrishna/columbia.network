@@ -8,6 +8,8 @@ import {
   forceManyBody,
   forceCenter,
   forceCollide,
+  forceX,
+  forceY,
   Simulation,
   SimulationNodeDatum,
   SimulationLinkDatum,
@@ -18,6 +20,7 @@ interface NetworkGraphProps {
   connections: Connection[];
   highlightedMemberIds?: string[];
   searchQuery?: string;
+  onNodeClick?: (firstName: string) => void;
 }
 
 interface SimNode extends SimulationNodeDatum {
@@ -37,6 +40,7 @@ export default function NetworkGraph({
   connections,
   highlightedMemberIds = [],
   searchQuery = "",
+  onNodeClick,
 }: NetworkGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -173,6 +177,11 @@ export default function NetworkGraph({
         updateVisuals();
         forceRender((c) => c + 1);
       }
+    } else if (!searchQuery) {
+      zoomLevelRef.current = 1;
+      panOffsetRef.current = { x: 0, y: 0 };
+      updateVisuals();
+      forceRender((c) => c + 1);
     }
   }, [searchQuery, highlightedMemberIds, updateVisuals]);
 
@@ -216,18 +225,36 @@ export default function NetworkGraph({
       target: conn.toId,
     }));
 
-    // Create D3 force simulation
+    // === Physics config — tweak everything here ===
+    const physics = {
+      chargeStrength: -400, // repulsion between nodes; more negative = spread further apart
+      linkDistance: 120, // target edge length in px; higher = connected nodes sit further apart
+      collideRadius: 30, // min distance between node centers; prevents overlap
+      centerStrengthX: 0.02, // horizontal pull toward center; higher = snaps back faster
+      centerStrengthY: 0.02, // vertical pull toward center; higher = snaps back faster
+      velocityDecay: 0.25, // friction; lower = more momentum/overshoot/bounce
+      alpha: 0.3, // constant energy level; higher = more movement
+      dragAlpha: 0.4, // energy level while dragging; higher = neighbors react more
+    };
+
     const simulation = forceSimulation<SimNode>(nodesRef.current)
-      .force("charge", forceManyBody<SimNode>().strength(-200))
+      .force(
+        "charge",
+        forceManyBody<SimNode>().strength(physics.chargeStrength),
+      )
       .force(
         "link",
         forceLink<SimNode, SimLink>(links)
           .id((d) => d.id)
-          .distance(120),
+          .distance(physics.linkDistance),
       )
       .force("center", forceCenter<SimNode>(width / 2, height / 2))
-      .force("collide", forceCollide<SimNode>(30))
-      .alphaDecay(0.015)
+      .force("collide", forceCollide<SimNode>(physics.collideRadius))
+      .force("x", forceX<SimNode>(width / 2).strength(physics.centerStrengthX))
+      .force("y", forceY<SimNode>(height / 2).strength(physics.centerStrengthY))
+      .velocityDecay(physics.velocityDecay)
+      .alpha(physics.alpha)
+      .alphaDecay(0)
       .on("tick", () => {
         updateVisuals();
       });
@@ -352,23 +379,28 @@ export default function NetworkGraph({
           (node.y! - height / 2) * zoomLevel + height / 2 + panOffset.y;
 
         dragOffsetRef.current = {
-          x: (mouseX - transformedX) * zoomLevel,
-          y: (mouseY - transformedY) * zoomLevel,
+          x: mouseX - transformedX,
+          y: mouseY - transformedY,
         };
 
         // Pin the node and reheat simulation
         node.fx = node.x;
         node.fy = node.y;
-        simulation.alphaTarget(0.3).restart();
+        simulation.alpha(physics.dragAlpha).restart();
       });
 
       nodeDiv.addEventListener("click", (e) => {
         const wasDragging = (nodeDiv as any).__isDragging === true;
-        if (!wasDragging && !isDraggingRef.current && node.website) {
-          const url = node.website.startsWith("http")
-            ? node.website
-            : `https://${node.website}`;
-          window.open(url, "_blank");
+        if (!wasDragging && !isDraggingRef.current) {
+          if (node.website) {
+            const url = node.website.startsWith("http")
+              ? node.website
+              : `https://${node.website}`;
+            window.open(url, "_blank");
+          } else if (onNodeClick && node.name) {
+            const firstName = node.name.split(" ")[0].toLowerCase();
+            onNodeClick(firstName);
+          }
         }
         (nodeDiv as any).__isDragging = false;
       });
@@ -412,13 +444,13 @@ export default function NetworkGraph({
           const panOffset = panOffsetRef.current;
 
           const newX =
-            (mouseX - panOffset.x - width / 2) / zoomLevel +
-            width / 2 -
-            dragOffsetRef.current.x / zoomLevel;
+            (mouseX - dragOffsetRef.current.x - panOffset.x - width / 2) /
+              zoomLevel +
+            width / 2;
           const newY =
-            (mouseY - panOffset.y - height / 2) / zoomLevel +
-            height / 2 -
-            dragOffsetRef.current.y / zoomLevel;
+            (mouseY - dragOffsetRef.current.y - panOffset.y - height / 2) /
+              zoomLevel +
+            height / 2;
 
           // Pin node to dragged position
           node.fx = newX;
@@ -447,7 +479,7 @@ export default function NetworkGraph({
           nodeDiv.style.cursor = "grab";
         }
         // Cool down the simulation
-        simulation.alphaTarget(0);
+        simulation.alpha(physics.alpha);
         isDraggingRef.current = false;
         dragNodeRef.current = null;
       }
@@ -506,6 +538,7 @@ export default function NetworkGraph({
     updateVisuals,
     highlightedMemberIds,
     searchQuery,
+    onNodeClick,
   ]);
 
   return (
