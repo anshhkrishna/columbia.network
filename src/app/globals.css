@@ -1,7 +1,7 @@
 /* Times New Roman - system font, no import needed */
 
 :root {
-  --background: #ffffff;
+  --background: #000000;
   --foreground: #111111;
   --secondary: #666666;
   --tertiary: #999999;
@@ -15,7 +15,7 @@
 }
 
 [data-theme='dark'] {
-  --background: #0a0a0a;
+  --background: #000000;
   --foreground: #ededed;
   --secondary: #a0a0a0;
   --tertiary: #707070;
