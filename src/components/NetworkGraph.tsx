@@ -232,7 +232,7 @@ export default function NetworkGraph({ members, connections, highlightedMemberId
                 initialsDiv.style.color = isDark ? '#fff' : '#fff';
                 initialsDiv.style.fontSize = '16px';
                 initialsDiv.style.fontWeight = '600';
-                initialsDiv.style.fontFamily = "'Times New Roman', Times, serif";
+                initialsDiv.style.fontFamily = "'Roboto', sans-serif";
                 initialsDiv.style.transition = 'opacity 0.3s ease';
                 avatarEl = initialsDiv;
             }

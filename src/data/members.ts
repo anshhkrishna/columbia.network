@@ -372,6 +372,42 @@ export const members: Member[] = [
     connections: ["ansh-krishna", "sid-rout", "justin-hou", "joseph-jojoe", "anibal-segovia", "alex-jerpelea", "ravin-chutijirawong", "arm-komolhiran"],
   },
 
+  {
+    id: "rahul-arora",
+    name: "Rahul Arora",
+    website: "rahulsarora.com",
+    program: "CS",
+    roles: ["product", "software"],
+    verticals: ["consumer"],
+    profilePic: "/photos/rahul-arora.png",
+    linkedin: "https://www.linkedin.com/in/rahul-arora-114540219/",
+    twitter: "https://x.com/rahulsarora",
+    connections: ["justin-hou", "armaan-agrawal", "justine-mach", "ella-sy", "naythan-chan", "ravin-chutijirawong", "mihir-garimella", "arm-komolhiran", "alex-jerpelea", "sid-rout", "anibal-segovia"],
+  },
+
+  {
+    id: "aiden-gandhi",
+    name: "Aiden Gandhi",
+    website: "",
+    program: "CS",
+    roles: ["research", "finance"],
+    verticals: ["fintech", "ai"],
+    profilePic: "/photos/aiden-gandhi.png",
+    linkedin: "https://www.linkedin.com/in/aiden-gandhi/",
+    connections: ["ansh-krishna"],
+  },
+
+  {
+    id: "ethan-schales",
+    name: "Ethan Schales",
+    website: "",
+    program: "Math + CS",
+    roles: ["quant"],
+    profilePic: "/photos/ethan-schales.png",
+    linkedin: "https://www.linkedin.com/in/ethan41sch/",
+    connections: ["ansh-krishna", "sid-rout", "rahul-arora"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
