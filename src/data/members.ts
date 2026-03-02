@@ -359,6 +359,19 @@ export const members: Member[] = [
     connections: ["ansh-krishna", "justin-hou", "ravin-chutijirawong", "anibal-segovia", "sid-rout", "arm-komolhiran", "marcus-lam", "tanush-sawhney", "ella-sy", "joseph-jojoe", "justine-mach"],
   },
 
+  {
+    id: "aedin-pereira",
+    name: "Aedin Pereira",
+    website: "https://www.aedinpereira.dev/",
+    program: "CS + Philosophy",
+    roles: ["engineering", "ai/ml", "software"],
+    verticals: ["consumer", "fintech", "ai"],
+    profilePic: "/photos/aedin-pereira.jpg",
+    linkedin: "www.linkedin.com/in/aedin-pereira",
+    twitter: "https://x.com/aedinpereira",
+    connections: ["ansh-krishna", "sid-rout", "justin-hou", "joseph-jojoe", "anibal-segovia", "alex-jerpelea", "ravin-chutijirawong", "arm-komolhiran"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
