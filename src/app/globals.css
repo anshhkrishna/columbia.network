@@ -70,8 +70,13 @@ a {
     align-items: flex-start;
   }
 
+  .content-wrapper {
+    flex: 1.4;
+  }
+
   .graph-section {
-    max-width: 600px;
+    flex: 0.85;
+    max-width: 520px;
   }
 }
 

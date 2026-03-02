@@ -87,8 +87,8 @@ export const members: Member[] = [
     name: "Ansh Krishna",
     website: "https://anshkrishna.com",
     program: "CS + Economics",
-    roles: ["engineering", "growth", "software", "vc"],
-    verticals: ["fintech", "ai", "consumer"],
+    roles: ["engineering", "growth", "software", "vc", "product"],
+    verticals: ["fintech", "ai", "consumer", "healthcare", "edtech"],
     twitter: "https://x.com/anshhkrishna",
     linkedin: "https://linkedin.com/in/ansh-krishna",
     connections: ["manas-chan"],
@@ -123,6 +123,28 @@ export const members: Member[] = [
     verticals: ["ai", "healthcare", "saas", "consumer", "creator tools"],
     linkedin: "https://www.linkedin.com/in/ravin-chutijirawong-5b8700350/",
     connections: ["ansh-krishna", "alex-jerpelea"],
+  },
+
+  {
+    id: "joseph-jojoe",
+    name: "Joseph Jojoe",
+    website: "https://www.josephjojoe.com/",
+    program: "CS and Math",
+    roles: ["design", "product", "ai/ml", "software", "vc"],
+    verticals: ["ai", "edtech", "marketplaces", "hard tech", "consumer", "saas", "creator tools"],
+    twitter: "https://x.com/josephjojoe",
+    linkedin: "https://www.linkedin.com/in/josephjojoe/",
+    connections: ["ansh-krishna", "ravin-chutijirawong", "alex-jerpelea"],
+  },
+
+  {
+    id: "vihaan-shah",
+    name: "Vihaan Shah",
+    program: "Mechanical Engineering",
+    roles: ["engineering", "software", "ai/ml", "research", "hardware"],
+    verticals: ["ai", "robotics", "defense", "hard tech", "saas"],
+    linkedin: "https://www.linkedin.com/in/vihaan-shah/",
+    connections: ["ansh-krishna"],
   },
 
   // ============================================
