@@ -1,423 +1,521 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState, useRef } from 'react';
-import { Member, Connection } from '@/data/members';
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { Member, Connection } from "@/data/members";
+import {
+  forceSimulation,
+  forceLink,
+  forceManyBody,
+  forceCenter,
+  forceCollide,
+  Simulation,
+  SimulationNodeDatum,
+  SimulationLinkDatum,
+} from "d3-force";
 
 interface NetworkGraphProps {
-    members: Member[];
-    connections: Connection[];
-    highlightedMemberIds?: string[];
-    searchQuery?: string;
+  members: Member[];
+  connections: Connection[];
+  highlightedMemberIds?: string[];
+  searchQuery?: string;
 }
 
-interface Node {
-    id: string;
-    name: string | null;
-    profilePic: string | undefined;
-    website: string | null | undefined;
-    x: number;
-    y: number;
+interface SimNode extends SimulationNodeDatum {
+  id: string;
+  name: string | null;
+  profilePic: string | undefined;
+  website: string | null | undefined;
 }
 
-export default function NetworkGraph({ members, connections, highlightedMemberIds = [], searchQuery = '' }: NetworkGraphProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const svgRef = useRef<SVGSVGElement | null>(null);
-    const nodesRef = useRef<Node[]>([]);
-    const nodeElementsRef = useRef<Map<string, HTMLDivElement>>(new Map());
-    const dragNodeRef = useRef<string | null>(null);
-    const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-    const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-    const isDraggingRef = useRef(false);
-    const isPanningRef = useRef(false);
-    const panStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-    const animationFrameRef = useRef<number | null>(null);
-    const isAnimatingRef = useRef(false);
-    const [isDark, setIsDark] = useState(false);
-    const [zoomLevel, setZoomLevel] = useState(1);
-    const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+interface SimLink extends SimulationLinkDatum<SimNode> {
+  source: string | SimNode;
+  target: string | SimNode;
+}
 
-    useEffect(() => {
-        const checkDarkMode = () => {
-            const theme = document.documentElement.getAttribute('data-theme');
-            setIsDark(theme === 'dark');
-        };
+export default function NetworkGraph({
+  members,
+  connections,
+  highlightedMemberIds = [],
+  searchQuery = "",
+}: NetworkGraphProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const nodesRef = useRef<SimNode[]>([]);
+  const nodeElementsRef = useRef<Map<string, HTMLDivElement>>(new Map());
+  const simulationRef = useRef<Simulation<SimNode, SimLink> | null>(null);
+  const dragNodeRef = useRef<string | null>(null);
+  const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const isDraggingRef = useRef(false);
+  const isPanningRef = useRef(false);
+  const panStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isDark, setIsDark] = useState(false);
+  const zoomLevelRef = useRef(1);
+  const panOffsetRef = useRef({ x: 0, y: 0 });
+  const [, forceRender] = useState(0);
+  const dimensionsRef = useRef({ width: 0, height: 0 });
 
-        checkDarkMode();
-
-        const observer = new MutationObserver(checkDarkMode);
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['data-theme'],
-        });
-
-        return () => observer.disconnect();
-    }, []);
-
-    useEffect(() => {
-        if (!containerRef.current) return;
-
-        const width = containerRef.current.clientWidth;
-        const height = containerRef.current.clientHeight;
-
-        isAnimatingRef.current = true;
-        
-        const animate = () => {
-            if (isAnimatingRef.current) {
-                updateVisuals();
-                animationFrameRef.current = requestAnimationFrame(animate);
-            }
-        };
-
-        if (searchQuery && highlightedMemberIds.length > 0) {
-            const targetNode = nodesRef.current.find(n => highlightedMemberIds.includes(n.id));
-            
-            if (targetNode) {
-                const newZoom = 2.5;
-                setZoomLevel(newZoom);
-                
-                const targetZoomedX = (targetNode.x - width / 2) * newZoom + width / 2;
-                const targetZoomedY = (targetNode.y - height / 2) * newZoom + height / 2;
-                
-                const offsetX = width / 2 - targetZoomedX;
-                const offsetY = height / 2 - targetZoomedY;
-                
-                setPanOffset({ x: offsetX, y: offsetY });
-            }
-        }
-
-        animate();
-
-        const stopTimeout = setTimeout(() => {
-            isAnimatingRef.current = false;
-            if (animationFrameRef.current) {
-                cancelAnimationFrame(animationFrameRef.current);
-            }
-        }, 600);
-
-        return () => {
-            clearTimeout(stopTimeout);
-            isAnimatingRef.current = false;
-            if (animationFrameRef.current) {
-                cancelAnimationFrame(animationFrameRef.current);
-            }
-        };
-    }, [searchQuery, highlightedMemberIds]);
-
-    const updateVisuals = () => {
-        const svg = svgRef.current;
-        const nodes = nodesRef.current;
-        const container = containerRef.current;
-
-        if (!svg || !container) return;
-
-        const width = container.clientWidth;
-        const height = container.clientHeight;
-
-        svg.innerHTML = '';
-        connections.forEach((conn) => {
-            const fromNode = nodes.find(n => n.id === conn.fromId);
-            const toNode = nodes.find(n => n.id === conn.toId);
-
-            if (fromNode && toNode) {
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                const x1 = (fromNode.x - width / 2) * zoomLevel + width / 2 + panOffset.x;
-                const y1 = (fromNode.y - height / 2) * zoomLevel + height / 2 + panOffset.y;
-                const x2 = (toNode.x - width / 2) * zoomLevel + width / 2 + panOffset.x;
-                const y2 = (toNode.y - height / 2) * zoomLevel + height / 2 + panOffset.y;
-                
-                line.setAttribute('x1', x1.toString());
-                line.setAttribute('y1', y1.toString());
-                line.setAttribute('x2', x2.toString());
-                line.setAttribute('y2', y2.toString());
-                line.setAttribute('stroke', isDark ? '#888' : '#555');
-                line.setAttribute('stroke-width', '2');
-                line.setAttribute('opacity', '0.6');
-                svg.appendChild(line);
-            }
-        });
-
-        nodes.forEach((node) => {
-            const nodeDiv = nodeElementsRef.current.get(node.id);
-            if (nodeDiv) {
-                const transformedX = (node.x - width / 2) * zoomLevel + width / 2 + panOffset.x;
-                const transformedY = (node.y - height / 2) * zoomLevel + height / 2 + panOffset.y;
-                
-                nodeDiv.style.left = `${transformedX}px`;
-                nodeDiv.style.top = `${transformedY}px`;
-                nodeDiv.style.transform = `translate(-50%, -50%) scale(${zoomLevel})`;
-                
-                const avatarChild = nodeDiv.firstElementChild as HTMLElement;
-                if (avatarChild) {
-                    const isHighlighted = highlightedMemberIds.length === 0 || highlightedMemberIds.includes(node.id);
-                    if (searchQuery && isHighlighted) {
-                        avatarChild.style.opacity = '1';
-                    } else if (searchQuery && !isHighlighted) {
-                        avatarChild.style.opacity = '0.3';
-                    } else {
-                        avatarChild.style.opacity = '1';
-                    }
-                }
-            }
-        });
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const theme = document.documentElement.getAttribute("data-theme");
+      setIsDark(theme === "dark");
     };
 
-    useEffect(() => {
-        if (!containerRef.current || members.length === 0) return;
+    checkDarkMode();
 
-        const container = containerRef.current;
-        const width = container.clientWidth;
-        const height = container.clientHeight;
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
 
-        container.innerHTML = '';
-        nodeElementsRef.current.clear();
+    return () => observer.disconnect();
+  }, []);
 
-        const goldenAngle = Math.PI * (3 - Math.sqrt(5));
-        nodesRef.current = members.map((member, i) => {
-            const radius = Math.sqrt(i + 0.5) * (Math.min(width, height) / (2.5 * Math.sqrt(members.length)));
-            const angle = i * goldenAngle;
+  const updateVisuals = useCallback(() => {
+    const svg = svgRef.current;
+    const nodes = nodesRef.current;
+    const container = containerRef.current;
 
-            return {
-                id: member.id,
-                name: member.name,
-                profilePic: member.profilePic,
-                website: member.website,
-                x: width / 2 + radius * Math.cos(angle),
-                y: height / 2 + radius * Math.sin(angle),
-            };
-        });
+    if (!svg || !container) return;
 
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.style.position = 'absolute';
-        svg.style.top = '0';
-        svg.style.left = '0';
-        svg.style.width = '100%';
-        svg.style.height = '100%';
-        svg.style.pointerEvents = 'none';
-        svg.style.transition = 'opacity 0.3s ease';
-        svgRef.current = svg;
-        container.appendChild(svg);
+    const { width, height } = dimensionsRef.current;
+    const zoomLevel = zoomLevelRef.current;
+    const panOffset = panOffsetRef.current;
 
-        nodesRef.current.forEach((node) => {
-            const nodeDiv = document.createElement('div');
-            nodeDiv.style.position = 'absolute';
-            nodeDiv.style.cursor = 'grab';
-            nodeDiv.style.userSelect = 'none';
-            nodeDiv.style.transition = 'left 0.5s ease, top 0.5s ease, transform 0.5s ease';
+    svg.innerHTML = "";
+    connections.forEach((conn) => {
+      const fromNode = nodes.find((n) => n.id === conn.fromId);
+      const toNode = nodes.find((n) => n.id === conn.toId);
 
-            let avatarEl: HTMLElement;
+      if (
+        fromNode &&
+        toNode &&
+        fromNode.x != null &&
+        fromNode.y != null &&
+        toNode.x != null &&
+        toNode.y != null
+      ) {
+        const line = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "line",
+        );
+        const x1 =
+          (fromNode.x - width / 2) * zoomLevel + width / 2 + panOffset.x;
+        const y1 =
+          (fromNode.y - height / 2) * zoomLevel + height / 2 + panOffset.y;
+        const x2 = (toNode.x - width / 2) * zoomLevel + width / 2 + panOffset.x;
+        const y2 =
+          (toNode.y - height / 2) * zoomLevel + height / 2 + panOffset.y;
 
-            if (node.profilePic) {
-                const img = document.createElement('img');
-                img.src = node.profilePic;
-                img.style.width = '40px';
-                img.style.height = '40px';
-                img.style.borderRadius = '50%';
-                img.style.objectFit = 'cover';
-                img.style.filter = 'none';
-                img.style.display = 'block';
-                img.draggable = false;
-                img.style.transition = 'filter 0.3s ease, opacity 0.3s ease';
-                avatarEl = img;
-            } else {
-                const initialsDiv = document.createElement('div');
-                const initials = (node.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-                initialsDiv.textContent = initials;
-                initialsDiv.style.width = '40px';
-                initialsDiv.style.height = '40px';
-                initialsDiv.style.borderRadius = '50%';
-                initialsDiv.style.display = 'flex';
-                initialsDiv.style.alignItems = 'center';
-                initialsDiv.style.justifyContent = 'center';
-                initialsDiv.style.backgroundColor = isDark ? '#888' : '#555';
-                initialsDiv.style.color = isDark ? '#fff' : '#fff';
-                initialsDiv.style.fontSize = '16px';
-                initialsDiv.style.fontWeight = '600';
-                initialsDiv.style.fontFamily = "'Times New Roman', Times, serif";
-                initialsDiv.style.transition = 'opacity 0.3s ease';
-                avatarEl = initialsDiv;
-            }
+        line.setAttribute("x1", x1.toString());
+        line.setAttribute("y1", y1.toString());
+        line.setAttribute("x2", x2.toString());
+        line.setAttribute("y2", y2.toString());
+        line.setAttribute("stroke", isDark ? "#888" : "#555");
+        line.setAttribute("stroke-width", "2");
+        line.setAttribute("opacity", "0.6");
+        svg.appendChild(line);
+      }
+    });
 
-            const nameLabel = document.createElement('div');
-            nameLabel.textContent = node.name || 'Unknown';
-            nameLabel.style.position = 'absolute';
-            nameLabel.style.top = '100%';
-            nameLabel.style.left = '50%';
-            nameLabel.style.transform = 'translateX(-50%)';
-            nameLabel.style.marginTop = '4px';
-            nameLabel.style.padding = '2px 6px';
-            nameLabel.style.background = isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)';
-            nameLabel.style.color = isDark ? '#fff' : '#000';
-            nameLabel.style.fontSize = '11px';
-            nameLabel.style.fontWeight = '500';
-            nameLabel.style.borderRadius = '4px';
-            nameLabel.style.whiteSpace = 'nowrap';
-            nameLabel.style.pointerEvents = 'none';
-            nameLabel.style.opacity = '0';
-            nameLabel.style.transition = 'opacity 0.2s ease';
-            nameLabel.style.zIndex = '1000';
-            nameLabel.style.fontFamily = 'Inter, sans-serif';
+    nodes.forEach((node) => {
+      const nodeDiv = nodeElementsRef.current.get(node.id);
+      if (nodeDiv && node.x != null && node.y != null) {
+        const transformedX =
+          (node.x - width / 2) * zoomLevel + width / 2 + panOffset.x;
+        const transformedY =
+          (node.y - height / 2) * zoomLevel + height / 2 + panOffset.y;
 
-            nodeDiv.addEventListener('mouseenter', () => {
-                if (avatarEl instanceof HTMLImageElement) avatarEl.style.filter = 'grayscale(0%)';
-                avatarEl.style.opacity = '1';
-                nameLabel.style.opacity = '1';
-            });
+        nodeDiv.style.left = `${transformedX}px`;
+        nodeDiv.style.top = `${transformedY}px`;
+        nodeDiv.style.transform = `translate(-50%, -50%) scale(${zoomLevel})`;
 
-            nodeDiv.addEventListener('mouseleave', () => {
-                const isHighlighted = highlightedMemberIds.length === 0 || highlightedMemberIds.includes(node.id);
-                if (searchQuery && isHighlighted) {
-                    avatarEl.style.opacity = '1';
-                } else if (searchQuery && !isHighlighted) {
-                    avatarEl.style.opacity = '0.3';
-                } else {
-                    avatarEl.style.opacity = '1';
-                }
-                nameLabel.style.opacity = '0';
-            });
+        const avatarChild = nodeDiv.firstElementChild as HTMLElement;
+        if (avatarChild) {
+          const isHighlighted =
+            highlightedMemberIds.length === 0 ||
+            highlightedMemberIds.includes(node.id);
+          if (searchQuery && isHighlighted) {
+            avatarChild.style.opacity = "1";
+          } else if (searchQuery && !isHighlighted) {
+            avatarChild.style.opacity = "0.3";
+          } else {
+            avatarChild.style.opacity = "1";
+          }
+        }
+      }
+    });
+  }, [connections, isDark, highlightedMemberIds, searchQuery]);
 
-            nodeDiv.addEventListener('mousedown', (e) => {
-                (nodeDiv as any).__isDragging = false;
-                dragStartRef.current = { x: e.clientX, y: e.clientY };
-                isDraggingRef.current = false;
-                dragNodeRef.current = node.id;
-                nodeDiv.style.cursor = 'grabbing';
-                nodeDiv.style.transition = 'none';
-                const rect = container.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                const transformedX = (node.x - width / 2) * zoomLevel + width / 2 + panOffset.x;
-                const transformedY = (node.y - height / 2) * zoomLevel + height / 2 + panOffset.y;
-                
-                dragOffsetRef.current = {
-                    x: (mouseX - transformedX) * zoomLevel,
-                    y: (mouseY - transformedY) * zoomLevel
-                };
-            });
+  useEffect(() => {
+    if (!containerRef.current) return;
 
-            nodeDiv.addEventListener('click', (e) => {
-                const wasDragging = (nodeDiv as any).__isDragging === true;
-                if (!wasDragging && !isDraggingRef.current && node.website) {
-                    const url = node.website.startsWith('http') ? node.website : `https://${node.website}`;
-                    window.open(url, '_blank');
-                }
-                (nodeDiv as any).__isDragging = false;
-            });
+    const { width, height } = dimensionsRef.current;
 
-            nodeDiv.appendChild(avatarEl);
-            nodeDiv.appendChild(nameLabel);
-            container.appendChild(nodeDiv);
-            nodeElementsRef.current.set(node.id, nodeDiv);
-        });
+    if (searchQuery && highlightedMemberIds.length > 0) {
+      const targetNode = nodesRef.current.find((n) =>
+        highlightedMemberIds.includes(n.id),
+      );
 
-        const handleContainerMouseDown = (e: MouseEvent) => {
-            if (e.target === container || e.target === svgRef.current) {
-                isPanningRef.current = true;
-                container.style.cursor = 'grabbing';
-                panStartRef.current = {
-                    x: e.clientX - panOffset.x,
-                    y: e.clientY - panOffset.y
-                };
-            }
-        };
+      if (targetNode && targetNode.x != null && targetNode.y != null) {
+        const newZoom = 2.5;
+        zoomLevelRef.current = newZoom;
 
-        const handleMouseMove = (e: MouseEvent) => {
-            if (dragNodeRef.current && dragStartRef.current) {
-                const moveDistance = Math.abs(e.clientX - dragStartRef.current.x) + Math.abs(e.clientY - dragStartRef.current.y);
-                if (moveDistance > 3) {
-                    isDraggingRef.current = true;
-                    const nodeDiv = nodeElementsRef.current.get(dragNodeRef.current);
-                    if (nodeDiv) {
-                        (nodeDiv as any).__isDragging = true;
-                    }
-                }
+        const targetZoomedX = (targetNode.x - width / 2) * newZoom + width / 2;
+        const targetZoomedY =
+          (targetNode.y - height / 2) * newZoom + height / 2;
 
-                const rect = container.getBoundingClientRect();
-                const node = nodesRef.current.find(n => n.id === dragNodeRef.current);
-                if (node) {
-                    const mouseX = e.clientX - rect.left;
-                    const mouseY = e.clientY - rect.top;
-                    
-                    node.x = ((mouseX - panOffset.x - width / 2) / zoomLevel) + width / 2 - dragOffsetRef.current.x / zoomLevel;
-                    node.y = ((mouseY - panOffset.y - height / 2) / zoomLevel) + height / 2 - dragOffsetRef.current.y / zoomLevel;
+        const offsetX = width / 2 - targetZoomedX;
+        const offsetY = height / 2 - targetZoomedY;
 
-                    const padding = 20;
-                    node.x = Math.max(padding, Math.min(width - padding, node.x));
-                    node.y = Math.max(padding, Math.min(height - padding, node.y));
-
-                    updateVisuals();
-                }
-            } else if (isPanningRef.current) {
-                const newPanX = e.clientX - panStartRef.current.x;
-                const newPanY = e.clientY - panStartRef.current.y;
-                setPanOffset({ x: newPanX, y: newPanY });
-                updateVisuals();
-            }
-        };
-
-        const handleMouseUp = () => {
-            if (dragNodeRef.current) {
-                const nodeDiv = nodeElementsRef.current.get(dragNodeRef.current);
-                if (nodeDiv) {
-                    nodeDiv.style.cursor = 'grab';
-                    nodeDiv.style.transition = 'left 0.5s ease, top 0.5s ease, transform 0.5s ease';
-                }
-                isDraggingRef.current = false;
-                dragNodeRef.current = null;
-            }
-            
-            if (isPanningRef.current) {
-                isPanningRef.current = false;
-                container.style.cursor = '';
-            }
-        };
-
-        const handleWheel = (e: WheelEvent) => {
-            e.preventDefault();
-            
-            const rect = container.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            
-            const zoomDelta = e.deltaY > 0 ? 0.97 : 1.03;
-            const newZoom = Math.min(Math.max(zoomLevel * zoomDelta, 0.5), 5);
-            
-            const zoomPointX = (mouseX - panOffset.x - width / 2) / zoomLevel + width / 2;
-            const zoomPointY = (mouseY - panOffset.y - height / 2) / zoomLevel + height / 2;
-            
-            const newPanX = mouseX - (zoomPointX - width / 2) * newZoom - width / 2;
-            const newPanY = mouseY - (zoomPointY - height / 2) * newZoom - height / 2;
-            
-            setZoomLevel(newZoom);
-            setPanOffset({ x: newPanX, y: newPanY });
-            
-            setTimeout(() => updateVisuals(), 0);
-        };
-
-        container.addEventListener('wheel', handleWheel, { passive: false });
-        container.addEventListener('mousedown', handleContainerMouseDown);
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-
+        panOffsetRef.current = { x: offsetX, y: offsetY };
         updateVisuals();
+        forceRender((c) => c + 1);
+      }
+    }
+  }, [searchQuery, highlightedMemberIds, updateVisuals]);
 
-        return () => {
-            container.removeEventListener('wheel', handleWheel);
-            container.removeEventListener('mousedown', handleContainerMouseDown);
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
+  useEffect(() => {
+    if (!containerRef.current || members.length === 0) return;
+
+    const container = containerRef.current;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    dimensionsRef.current = { width, height };
+
+    container.innerHTML = "";
+    nodeElementsRef.current.clear();
+
+    // Stop any existing simulation
+    if (simulationRef.current) {
+      simulationRef.current.stop();
+    }
+
+    // Golden spiral for initial positions
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    nodesRef.current = members.map((member, i) => {
+      const radius =
+        Math.sqrt(i + 0.5) *
+        (Math.min(width, height) / (2.5 * Math.sqrt(members.length)));
+      const angle = i * goldenAngle;
+
+      return {
+        id: member.id,
+        name: member.name,
+        profilePic: member.profilePic,
+        website: member.website,
+        x: width / 2 + radius * Math.cos(angle),
+        y: height / 2 + radius * Math.sin(angle),
+      };
+    });
+
+    // Build links array for d3-force
+    const links: SimLink[] = connections.map((conn) => ({
+      source: conn.fromId,
+      target: conn.toId,
+    }));
+
+    // Create D3 force simulation
+    const simulation = forceSimulation<SimNode>(nodesRef.current)
+      .force("charge", forceManyBody<SimNode>().strength(-200))
+      .force(
+        "link",
+        forceLink<SimNode, SimLink>(links)
+          .id((d) => d.id)
+          .distance(120),
+      )
+      .force("center", forceCenter<SimNode>(width / 2, height / 2))
+      .force("collide", forceCollide<SimNode>(30))
+      .alphaDecay(0.015)
+      .on("tick", () => {
+        updateVisuals();
+      });
+
+    simulationRef.current = simulation;
+
+    // Create SVG for edges
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.style.position = "absolute";
+    svg.style.top = "0";
+    svg.style.left = "0";
+    svg.style.width = "100%";
+    svg.style.height = "100%";
+    svg.style.pointerEvents = "none";
+    svgRef.current = svg;
+    container.appendChild(svg);
+
+    // Create DOM nodes
+    nodesRef.current.forEach((node) => {
+      const nodeDiv = document.createElement("div");
+      nodeDiv.style.position = "absolute";
+      nodeDiv.style.cursor = "grab";
+      nodeDiv.style.userSelect = "none";
+      // No CSS transitions — simulation drives positioning
+
+      let avatarEl: HTMLElement;
+
+      if (node.profilePic) {
+        const img = document.createElement("img");
+        img.src = node.profilePic;
+        img.style.width = "40px";
+        img.style.height = "40px";
+        img.style.borderRadius = "50%";
+        img.style.objectFit = "cover";
+        img.style.filter = "none";
+        img.style.display = "block";
+        img.draggable = false;
+        img.style.transition = "filter 0.3s ease, opacity 0.3s ease";
+        avatarEl = img;
+      } else {
+        const initialsDiv = document.createElement("div");
+        const initials = (node.name || "?")
+          .split(" ")
+          .map((w) => w[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2);
+        initialsDiv.textContent = initials;
+        initialsDiv.style.width = "40px";
+        initialsDiv.style.height = "40px";
+        initialsDiv.style.borderRadius = "50%";
+        initialsDiv.style.display = "flex";
+        initialsDiv.style.alignItems = "center";
+        initialsDiv.style.justifyContent = "center";
+        initialsDiv.style.backgroundColor = isDark ? "#888" : "#555";
+        initialsDiv.style.color = isDark ? "#fff" : "#fff";
+        initialsDiv.style.fontSize = "16px";
+        initialsDiv.style.fontWeight = "600";
+        initialsDiv.style.fontFamily = "'Times New Roman', Times, serif";
+        initialsDiv.style.transition = "opacity 0.3s ease";
+        avatarEl = initialsDiv;
+      }
+
+      const nameLabel = document.createElement("div");
+      nameLabel.textContent = node.name || "Unknown";
+      nameLabel.style.position = "absolute";
+      nameLabel.style.top = "100%";
+      nameLabel.style.left = "50%";
+      nameLabel.style.transform = "translateX(-50%)";
+      nameLabel.style.marginTop = "4px";
+      nameLabel.style.padding = "2px 6px";
+      nameLabel.style.background = isDark
+        ? "rgba(0, 0, 0, 0.8)"
+        : "rgba(255, 255, 255, 0.9)";
+      nameLabel.style.color = isDark ? "#fff" : "#000";
+      nameLabel.style.fontSize = "11px";
+      nameLabel.style.fontWeight = "500";
+      nameLabel.style.borderRadius = "4px";
+      nameLabel.style.whiteSpace = "nowrap";
+      nameLabel.style.pointerEvents = "none";
+      nameLabel.style.opacity = "0";
+      nameLabel.style.transition = "opacity 0.2s ease";
+      nameLabel.style.zIndex = "1000";
+      nameLabel.style.fontFamily = "Inter, sans-serif";
+
+      nodeDiv.addEventListener("mouseenter", () => {
+        if (avatarEl instanceof HTMLImageElement)
+          avatarEl.style.filter = "grayscale(0%)";
+        avatarEl.style.opacity = "1";
+        nameLabel.style.opacity = "1";
+      });
+
+      nodeDiv.addEventListener("mouseleave", () => {
+        const isHighlighted =
+          highlightedMemberIds.length === 0 ||
+          highlightedMemberIds.includes(node.id);
+        if (searchQuery && isHighlighted) {
+          avatarEl.style.opacity = "1";
+        } else if (searchQuery && !isHighlighted) {
+          avatarEl.style.opacity = "0.3";
+        } else {
+          avatarEl.style.opacity = "1";
+        }
+        nameLabel.style.opacity = "0";
+      });
+
+      nodeDiv.addEventListener("mousedown", (e) => {
+        (nodeDiv as any).__isDragging = false;
+        dragStartRef.current = { x: e.clientX, y: e.clientY };
+        isDraggingRef.current = false;
+        dragNodeRef.current = node.id;
+        nodeDiv.style.cursor = "grabbing";
+
+        const rect = container.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const zoomLevel = zoomLevelRef.current;
+        const panOffset = panOffsetRef.current;
+        const transformedX =
+          (node.x! - width / 2) * zoomLevel + width / 2 + panOffset.x;
+        const transformedY =
+          (node.y! - height / 2) * zoomLevel + height / 2 + panOffset.y;
+
+        dragOffsetRef.current = {
+          x: (mouseX - transformedX) * zoomLevel,
+          y: (mouseY - transformedY) * zoomLevel,
         };
-    }, [members, connections, isDark, zoomLevel, panOffset]);
 
-    return (
-        <div 
-            ref={containerRef}
-            className="network-graph-container" 
-            style={{ 
-                width: '100%', 
-                height: '400px'
-            }}
-        />
-    );
+        // Pin the node and reheat simulation
+        node.fx = node.x;
+        node.fy = node.y;
+        simulation.alphaTarget(0.3).restart();
+      });
+
+      nodeDiv.addEventListener("click", (e) => {
+        const wasDragging = (nodeDiv as any).__isDragging === true;
+        if (!wasDragging && !isDraggingRef.current && node.website) {
+          const url = node.website.startsWith("http")
+            ? node.website
+            : `https://${node.website}`;
+          window.open(url, "_blank");
+        }
+        (nodeDiv as any).__isDragging = false;
+      });
+
+      nodeDiv.appendChild(avatarEl);
+      nodeDiv.appendChild(nameLabel);
+      container.appendChild(nodeDiv);
+      nodeElementsRef.current.set(node.id, nodeDiv);
+    });
+
+    const handleContainerMouseDown = (e: MouseEvent) => {
+      if (e.target === container || e.target === svgRef.current) {
+        isPanningRef.current = true;
+        container.style.cursor = "grabbing";
+        panStartRef.current = {
+          x: e.clientX - panOffsetRef.current.x,
+          y: e.clientY - panOffsetRef.current.y,
+        };
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (dragNodeRef.current && dragStartRef.current) {
+        const moveDistance =
+          Math.abs(e.clientX - dragStartRef.current.x) +
+          Math.abs(e.clientY - dragStartRef.current.y);
+        if (moveDistance > 3) {
+          isDraggingRef.current = true;
+          const nodeDiv = nodeElementsRef.current.get(dragNodeRef.current);
+          if (nodeDiv) {
+            (nodeDiv as any).__isDragging = true;
+          }
+        }
+
+        const rect = container.getBoundingClientRect();
+        const node = nodesRef.current.find((n) => n.id === dragNodeRef.current);
+        if (node) {
+          const mouseX = e.clientX - rect.left;
+          const mouseY = e.clientY - rect.top;
+          const zoomLevel = zoomLevelRef.current;
+          const panOffset = panOffsetRef.current;
+
+          const newX =
+            (mouseX - panOffset.x - width / 2) / zoomLevel +
+            width / 2 -
+            dragOffsetRef.current.x / zoomLevel;
+          const newY =
+            (mouseY - panOffset.y - height / 2) / zoomLevel +
+            height / 2 -
+            dragOffsetRef.current.y / zoomLevel;
+
+          // Pin node to dragged position
+          node.fx = newX;
+          node.fy = newY;
+
+          updateVisuals();
+        }
+      } else if (isPanningRef.current) {
+        const newPanX = e.clientX - panStartRef.current.x;
+        const newPanY = e.clientY - panStartRef.current.y;
+        panOffsetRef.current = { x: newPanX, y: newPanY };
+        updateVisuals();
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (dragNodeRef.current) {
+        const node = nodesRef.current.find((n) => n.id === dragNodeRef.current);
+        if (node) {
+          // Unpin node so it settles back into simulation
+          node.fx = null;
+          node.fy = null;
+        }
+        const nodeDiv = nodeElementsRef.current.get(dragNodeRef.current);
+        if (nodeDiv) {
+          nodeDiv.style.cursor = "grab";
+        }
+        // Cool down the simulation
+        simulation.alphaTarget(0);
+        isDraggingRef.current = false;
+        dragNodeRef.current = null;
+      }
+
+      if (isPanningRef.current) {
+        isPanningRef.current = false;
+        container.style.cursor = "";
+      }
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+
+      const rect = container.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      const zoomLevel = zoomLevelRef.current;
+      const panOffset = panOffsetRef.current;
+
+      const zoomDelta = e.deltaY > 0 ? 0.97 : 1.03;
+      const newZoom = Math.min(Math.max(zoomLevel * zoomDelta, 0.5), 5);
+
+      const zoomPointX =
+        (mouseX - panOffset.x - width / 2) / zoomLevel + width / 2;
+      const zoomPointY =
+        (mouseY - panOffset.y - height / 2) / zoomLevel + height / 2;
+
+      const newPanX = mouseX - (zoomPointX - width / 2) * newZoom - width / 2;
+      const newPanY = mouseY - (zoomPointY - height / 2) * newZoom - height / 2;
+
+      zoomLevelRef.current = newZoom;
+      panOffsetRef.current = { x: newPanX, y: newPanY };
+
+      updateVisuals();
+      forceRender((c) => c + 1);
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    container.addEventListener("mousedown", handleContainerMouseDown);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    updateVisuals();
+
+    return () => {
+      simulation.stop();
+      container.removeEventListener("wheel", handleWheel);
+      container.removeEventListener("mousedown", handleContainerMouseDown);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [
+    members,
+    connections,
+    isDark,
+    updateVisuals,
+    highlightedMemberIds,
+    searchQuery,
+  ]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="network-graph-container"
+      style={{
+        width: "100%",
+        height: "400px",
+      }}
+    />
+  );
 }
-
-
