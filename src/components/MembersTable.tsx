@@ -1,6 +1,6 @@
 import React from 'react';
 import { Member } from '@/data/members';
-import { FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { FaInstagram, FaLinkedin, FaGlobe } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
 interface MembersTableProps {
@@ -20,16 +20,6 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
         );
     };
 
-    const getWebsiteLabel = (website: string, memberId?: string) => {
-        if (memberId === 'abhinav-goel') return 'abhigoel.com';
-        try {
-            const normalized = website.startsWith('http') ? website : `https://${website}`;
-            return new URL(normalized).hostname.replace(/^www\./, '');
-        } catch {
-            return website.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
-        }
-    };
-
     return (
         <div className="members-table-container">
             <div className="search-results-info">
@@ -46,7 +36,6 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
                     <tr>
                         <th>name</th>
                         <th>program</th>
-                        <th>site</th>
                         <th>links</th>
                     </tr>
                 </thead>
@@ -83,21 +72,18 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
                             </td>
                             <td>{highlightText(member.program) || '—'}</td>
                             <td>
-                                {member.website && member.website.trim() ? (
-                                    <a 
-                                        href={member.website.startsWith('http') ? member.website : `https://${member.website}`} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="site-link"
-                                    >
-                                        {getWebsiteLabel(member.website, member.id)}
-                                    </a>
-                                ) : (
-                                    <span className="table-placeholder">—</span>
-                                )}
-                            </td>
-                            <td>
                                 <div className="social-icons">
+                                    {member.website && member.website.trim() && (
+                                        <a 
+                                            href={member.website.startsWith('http') ? member.website : `https://${member.website}`}
+                                            target="_blank" 
+                                            rel="noopener noreferrer" 
+                                            className="social-icon-link"
+                                            title="Website"
+                                        >
+                                            <FaGlobe size={16} />
+                                        </a>
+                                    )}
                                     {member.instagram && (
                                         <a 
                                             href={member.instagram} 
@@ -131,7 +117,7 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
                                             <FaLinkedin size={16} />
                                         </a>
                                     )}
-                                    {!member.instagram && !member.twitter && !member.linkedin && (
+                                    {!member.website?.trim() && !member.instagram && !member.twitter && !member.linkedin && (
                                         <span className="table-placeholder">—</span>
                                     )}
                                 </div>

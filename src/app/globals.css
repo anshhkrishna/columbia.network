@@ -383,10 +383,9 @@ a {
   color: var(--foreground);
 }
 
-.members-table th:nth-child(1) { width: 33%; }
-.members-table th:nth-child(2) { width: 30%; }
-.members-table th:nth-child(3) { width: 22%; }
-.members-table th:nth-child(4) { width: 15%; padding-left: 1rem; }
+.members-table th:nth-child(1) { width: 40%; }
+.members-table th:nth-child(2) { width: 35%; }
+.members-table th:nth-child(3) { width: 25%; padding-left: 1rem; }
 
 .members-table td {
   padding: 1rem 1rem 1rem 0;
@@ -395,7 +394,7 @@ a {
   vertical-align: middle;
 }
 
-.members-table td:nth-child(4) {
+.members-table td:nth-child(3) {
   padding-left: 1rem;
   padding-right: 2rem;
 }
@@ -447,15 +446,6 @@ a {
   filter: grayscale(0%);
 }
 
-.site-link {
-  color: var(--foreground);
-  transition: opacity 0.2s;
-}
-
-.site-link:hover {
-  color: #001a57;
-}
-
 .name-link {
   color: var(--foreground);
   text-decoration: none;
@@ -466,7 +456,6 @@ a {
   color: #001a57;
 }
 
-[data-theme='dark'] .site-link:hover,
 [data-theme='dark'] .name-link:hover {
   color: #4a7abf;
 }
@@ -612,12 +601,6 @@ a {
     font-size: 0.8rem;
   }
   
-  /* Hide site column too on mobile, keep just name and links */
-  .members-table th:nth-child(3),
-  .members-table td:nth-child(3) {
-    display: none;
-  }
-  
   .members-table th,
   .members-table td {
     padding: 0.75rem 0.5rem 0.75rem 0;
@@ -634,8 +617,8 @@ a {
     padding-bottom: 0.75rem;
   }
   
-  .members-table th:nth-child(4),
-  .members-table td:nth-child(4) {
+  .members-table th:nth-child(3),
+  .members-table td:nth-child(3) {
     padding-left: 0.5rem;
     padding-right: 0.25rem;
   }
