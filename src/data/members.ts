@@ -129,7 +129,7 @@ export const members: Member[] = [
     id: "joseph-jojoe",
     name: "Joseph Jojoe",
     website: "https://www.josephjojoe.com/",
-    program: "CS and Math",
+    program: "CS + Math",
     roles: ["design", "product", "ai/ml", "software", "vc"],
     verticals: ["ai", "edtech", "marketplaces", "hard tech", "consumer", "saas", "creator tools"],
     twitter: "https://x.com/josephjojoe",
@@ -145,6 +145,52 @@ export const members: Member[] = [
     verticals: ["ai", "robotics", "defense", "hard tech", "saas"],
     linkedin: "https://www.linkedin.com/in/vihaan-shah/",
     connections: ["ansh-krishna"],
+  },
+
+  {
+    id: "armaan-agrawal",
+    name: "Armaan Agrawal",
+    program: "Computer Science + Statistics",
+    roles: ["engineering"],
+    verticals: [],
+    linkedin: "https://www.linkedin.com/in/armaan-agraw/",
+    twitter: "https://x.com/armaana_25?s=11&t=A3P-oYJ-xIQKCrTaZ8plvg",
+    connections: ["ansh-krishna", "alex-jerpelea"],
+  },
+
+  {
+    id: "tanush-sawhney",
+    name: "Tanush Sawhney",
+    website: "",
+    program: "Econ + CS-Math",
+    roles: ["product", "growth", "ai/ml", "research", "software", "finance"],
+    verticals: ["ai", "fintech", "hard tech"],
+    linkedin: "https://www.linkedin.com/in/tanushsawhney/",
+    twitter: "https://x.com/tanusawhney",
+    connections: ["ansh-krishna", "alex-jerpelea", "joseph-jojoe"],
+  },
+
+  {
+    id: "sid-rout",
+    name: "Sid Rout",
+    website: "sidrout.com",
+    program: "Math + CS",
+    roles: ["engineering", "quant"],
+    verticals: ["fintech", "saas", "consumer"],
+    linkedin: "https://www.linkedin.com/in/siddharth-rout-69a0191b9/",
+    connections: ["alex-jerpelea", "ravin-chutijirawong", "ansh-krishna", "armaan-agrawal", "tanush-sawhney"],
+  },
+
+  {
+    id: "justin-hou",
+    name: "Justin Hou",
+    website: "http://justinhou.me",
+    program: "CS",
+    roles: ["product", "growth", "software", "vc"],
+    verticals: ["saas", "consumer"],
+    twitter: "https://x.com/justinhouu",
+    linkedin: "https://www.linkedin.com/in/justinhou2005/",
+    connections: ["ansh-krishna", "tanush-sawhney", "alex-jerpelea", "sid-rout", "joseph-jojoe", "ravin-chutijirawong"],
   },
 
   // ============================================

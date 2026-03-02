@@ -506,7 +506,11 @@ a {
 }
 
 .social-icon-link:hover {
-  color: var(--hover-color);
+  color: #001a57;
+}
+
+[data-theme='dark'] .social-icon-link:hover {
+  color: #4a7abf;
 }
 
 [data-theme='dark'] .social-icon-link svg {
