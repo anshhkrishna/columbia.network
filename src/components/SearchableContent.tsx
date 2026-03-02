@@ -102,7 +102,9 @@ export default function SearchableContent({ members, connections }: SearchableCo
             <div className="content-wrapper">
                 <div className="header-section">
                     <div className="title-row">
-                        <h1 className="title">columbia.network</h1>
+                        <h1 className="title">
+                            <span className="cu-accent">columbia</span>.network
+                        </h1>
                     </div>
                     <div className="description">
                         <p>welcome to the webring for columbia university students.</p>
@@ -116,9 +118,15 @@ export default function SearchableContent({ members, connections }: SearchableCo
                                 href="https://github.com/anshhkrishna/columbia.network#join-the-webring" 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="join-link"
+                                className="join-link join-link-blue"
                             >
                                 submit a pull request
+                            </a>{' '}
+                            or <a
+                                href="/join"
+                                className="join-link join-link-blue"
+                            >
+                                fill the auto-pr form
                             </a>
                         </p>
                     </div>

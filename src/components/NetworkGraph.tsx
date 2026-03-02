@@ -116,9 +116,10 @@ export default function NetworkGraph({
         line.setAttribute("y1", y1.toString());
         line.setAttribute("x2", x2.toString());
         line.setAttribute("y2", y2.toString());
-        line.setAttribute("stroke", isDark ? "#888" : "#555");
-        line.setAttribute("stroke-width", "2");
-        line.setAttribute("opacity", "0.6");
+        const accent = "#6cb4e4";
+        line.setAttribute("stroke", accent);
+        line.setAttribute("stroke-width", "2.2");
+        line.setAttribute("opacity", "0.8");
         svg.appendChild(line);
       }
     });
@@ -341,10 +342,13 @@ export default function NetworkGraph({
       nameLabel.style.fontFamily = "Inter, sans-serif";
 
       nodeDiv.addEventListener("mouseenter", () => {
-        if (avatarEl instanceof HTMLImageElement)
-          avatarEl.style.filter = "grayscale(0%)";
+        if (avatarEl instanceof HTMLImageElement) avatarEl.style.filter = "grayscale(0%)";
         avatarEl.style.opacity = "1";
+        avatarEl.style.transform = "scale(1.15)";
         nameLabel.style.opacity = "1";
+        nameLabel.style.background = "rgba(12,16,24,0.85)";
+        nameLabel.style.border = "1px solid #6cb4e4";
+        nameLabel.style.color = "#6cb4e4";
       });
 
       nodeDiv.addEventListener("mouseleave", () => {
@@ -358,7 +362,13 @@ export default function NetworkGraph({
         } else {
           avatarEl.style.opacity = "1";
         }
+        avatarEl.style.transform = "scale(1)";
         nameLabel.style.opacity = "0";
+        nameLabel.style.background = isDark
+          ? "rgba(0, 0, 0, 0.8)"
+          : "rgba(255, 255, 255, 0.9)";
+        nameLabel.style.border = "none";
+        nameLabel.style.color = isDark ? "#fff" : "#000";
       });
 
       nodeDiv.addEventListener("mousedown", (e) => {
