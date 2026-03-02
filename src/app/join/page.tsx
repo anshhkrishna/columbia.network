@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
+import AsciiBackground from '@/components/AsciiBackground';
 
 type JoinPayload = {
   name: string;
@@ -150,6 +151,7 @@ export default function JoinPage() {
 
   return (
     <div className="join-page">
+      <AsciiBackground />
       <div className="join-page-card">
         <div className="join-page-header">
           <h1>

@@ -111,7 +111,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
                         <p>
                             columbia packs an unusually high density of talented engineers, designers, 
                             creators, and researchers into one campus in the middle of new york city. 
-                            this is the place to find the people doing things.
+                            this is the place to find people who are doing things.
                         </p>
                         <p>
                             want to join? <a 

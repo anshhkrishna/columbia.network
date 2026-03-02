@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <rect x="0" y="0" width="32" height="32" rx="6" ry="6" fill="#000000"/>
-  <text x="16" y="22" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="16" font-weight="bold" fill="#ffffff">CU</text>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="columbia network crown">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#002a7c"/>
+      <stop offset="100%" stop-color="#001a57"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="url(#bg)"/>
+  <g fill="none" stroke="#e8f4ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 34 L20 20 L32 32 L44 20 L52 34" />
+    <path d="M16 42 C24 50 40 50 48 42" />
+    <circle cx="20" cy="18" r="2.4"/>
+    <circle cx="32" cy="30" r="2.4"/>
+    <circle cx="44" cy="18" r="2.4"/>
+  </g>
+  <rect x="16" y="46" width="32" height="4" rx="2" fill="#e8f4ff" opacity="0.9"/>
 </svg>
