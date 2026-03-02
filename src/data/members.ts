@@ -359,6 +359,55 @@ export const members: Member[] = [
     connections: ["ansh-krishna", "justin-hou", "ravin-chutijirawong", "anibal-segovia", "sid-rout", "arm-komolhiran", "marcus-lam", "tanush-sawhney", "ella-sy", "joseph-jojoe", "justine-mach"],
   },
 
+  {
+    id: "aedin-pereira",
+    name: "Aedin Pereira",
+    website: "https://www.aedinpereira.dev/",
+    program: "CS + Philosophy",
+    roles: ["engineering", "ai/ml", "software"],
+    verticals: ["consumer", "fintech", "ai"],
+    profilePic: "/photos/aedin-pereira.jpg",
+    linkedin: "www.linkedin.com/in/aedin-pereira",
+    twitter: "https://x.com/aedinpereira",
+    connections: ["ansh-krishna", "sid-rout", "justin-hou", "joseph-jojoe", "anibal-segovia", "alex-jerpelea", "ravin-chutijirawong", "arm-komolhiran"],
+  },
+
+  {
+    id: "rahul-arora",
+    name: "Rahul Arora",
+    website: "rahulsarora.com",
+    program: "CS",
+    roles: ["product", "software"],
+    verticals: ["consumer"],
+    profilePic: "/photos/rahul-arora.png",
+    linkedin: "https://www.linkedin.com/in/rahul-arora-114540219/",
+    twitter: "https://x.com/rahulsarora",
+    connections: ["justin-hou", "armaan-agrawal", "justine-mach", "ella-sy", "naythan-chan", "ravin-chutijirawong", "mihir-garimella", "arm-komolhiran", "alex-jerpelea", "sid-rout", "anibal-segovia"],
+  },
+
+  {
+    id: "aiden-gandhi",
+    name: "Aiden Gandhi",
+    website: "",
+    program: "CS",
+    roles: ["research", "finance"],
+    verticals: ["fintech", "ai"],
+    profilePic: "/photos/aiden-gandhi.png",
+    linkedin: "https://www.linkedin.com/in/aiden-gandhi/",
+    connections: ["ansh-krishna"],
+  },
+
+  {
+    id: "ethan-schales",
+    name: "Ethan Schales",
+    website: "",
+    program: "Math + CS",
+    roles: ["quant"],
+    profilePic: "/photos/ethan-schales.png",
+    linkedin: "https://www.linkedin.com/in/ethan41sch/",
+    connections: ["ansh-krishna", "sid-rout", "rahul-arora"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================

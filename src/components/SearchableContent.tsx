@@ -105,7 +105,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
                         <h1 className="title">columbia.network</h1>
                     </div>
                     <div className="description">
-                        <p>welcome to the official webring for columbia university students.</p>
+                        <p>welcome to the webring for columbia university students.</p>
                         <p>
                             columbia packs an unusually high density of talented engineers, designers, 
                             creators, and researchers into one campus in the middle of new york city. 

@@ -237,150 +237,163 @@ export default function NetworkGraph({
       dragAlpha: 0.4, // energy level while dragging; higher = neighbors react more
     };
 
-    const simulation = forceSimulation<SimNode>(nodesRef.current)
-      .force(
-        "charge",
-        forceManyBody<SimNode>().strength(physics.chargeStrength),
-      )
-      .force(
-        "link",
-        forceLink<SimNode, SimLink>(links)
-          .id((d) => d.id)
-          .distance(physics.linkDistance),
-      )
-      .force("center", forceCenter<SimNode>(width / 2, height / 2))
-      .force("collide", forceCollide<SimNode>(physics.collideRadius))
-      .force("x", forceX<SimNode>(width / 2).strength(physics.centerStrengthX))
-      .force("y", forceY<SimNode>(height / 2).strength(physics.centerStrengthY))
-      .velocityDecay(physics.velocityDecay)
-      .alpha(physics.alpha)
-      .alphaDecay(0)
-      .on("tick", () => {
-        updateVisuals();
-      });
+    useEffect(() => {
+        if (!containerRef.current || members.length === 0) return;
 
-    simulationRef.current = simulation;
+        const container = containerRef.current;
+        const width = container.clientWidth;
+        const height = container.clientHeight;
 
-    // Create SVG for edges
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.style.position = "absolute";
-    svg.style.top = "0";
-    svg.style.left = "0";
-    svg.style.width = "100%";
-    svg.style.height = "100%";
-    svg.style.pointerEvents = "none";
-    svgRef.current = svg;
-    container.appendChild(svg);
+        container.innerHTML = '';
+        nodeElementsRef.current.clear();
 
-    // Create DOM nodes
-    nodesRef.current.forEach((node) => {
-      const nodeDiv = document.createElement("div");
-      nodeDiv.style.position = "absolute";
-      nodeDiv.style.cursor = "grab";
-      nodeDiv.style.userSelect = "none";
-      // No CSS transitions — simulation drives positioning
+        const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+        nodesRef.current = members.map((member, i) => {
+            const radius = Math.sqrt(i + 0.5) * (Math.min(width, height) / (2.5 * Math.sqrt(members.length)));
+            const angle = i * goldenAngle;
 
-      let avatarEl: HTMLElement;
+            return {
+                id: member.id,
+                name: member.name,
+                profilePic: member.profilePic,
+                website: member.website,
+                x: width / 2 + radius * Math.cos(angle),
+                y: height / 2 + radius * Math.sin(angle),
+            };
+        });
 
-      if (node.profilePic) {
-        const img = document.createElement("img");
-        img.src = node.profilePic;
-        img.style.width = "40px";
-        img.style.height = "40px";
-        img.style.borderRadius = "50%";
-        img.style.objectFit = "cover";
-        img.style.filter = "none";
-        img.style.display = "block";
-        img.draggable = false;
-        img.style.transition = "filter 0.3s ease, opacity 0.3s ease";
-        avatarEl = img;
-      } else {
-        const initialsDiv = document.createElement("div");
-        const initials = (node.name || "?")
-          .split(" ")
-          .map((w) => w[0])
-          .join("")
-          .toUpperCase()
-          .slice(0, 2);
-        initialsDiv.textContent = initials;
-        initialsDiv.style.width = "40px";
-        initialsDiv.style.height = "40px";
-        initialsDiv.style.borderRadius = "50%";
-        initialsDiv.style.display = "flex";
-        initialsDiv.style.alignItems = "center";
-        initialsDiv.style.justifyContent = "center";
-        initialsDiv.style.backgroundColor = isDark ? "#888" : "#555";
-        initialsDiv.style.color = isDark ? "#fff" : "#fff";
-        initialsDiv.style.fontSize = "16px";
-        initialsDiv.style.fontWeight = "600";
-        initialsDiv.style.fontFamily = "'Times New Roman', Times, serif";
-        initialsDiv.style.transition = "opacity 0.3s ease";
-        avatarEl = initialsDiv;
-      }
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.style.position = 'absolute';
+        svg.style.top = '0';
+        svg.style.left = '0';
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        svg.style.pointerEvents = 'none';
+        svg.style.transition = 'opacity 0.3s ease';
+        svgRef.current = svg;
+        container.appendChild(svg);
 
-      const nameLabel = document.createElement("div");
-      nameLabel.textContent = node.name || "Unknown";
-      nameLabel.style.position = "absolute";
-      nameLabel.style.top = "100%";
-      nameLabel.style.left = "50%";
-      nameLabel.style.transform = "translateX(-50%)";
-      nameLabel.style.marginTop = "4px";
-      nameLabel.style.padding = "2px 6px";
-      nameLabel.style.background = isDark
-        ? "rgba(0, 0, 0, 0.8)"
-        : "rgba(255, 255, 255, 0.9)";
-      nameLabel.style.color = isDark ? "#fff" : "#000";
-      nameLabel.style.fontSize = "11px";
-      nameLabel.style.fontWeight = "500";
-      nameLabel.style.borderRadius = "4px";
-      nameLabel.style.whiteSpace = "nowrap";
-      nameLabel.style.pointerEvents = "none";
-      nameLabel.style.opacity = "0";
-      nameLabel.style.transition = "opacity 0.2s ease";
-      nameLabel.style.zIndex = "1000";
-      nameLabel.style.fontFamily = "Inter, sans-serif";
+        nodesRef.current.forEach((node) => {
+            const nodeDiv = document.createElement('div');
+            nodeDiv.style.position = 'absolute';
+            nodeDiv.style.cursor = 'grab';
+            nodeDiv.style.userSelect = 'none';
+            nodeDiv.style.transition = 'left 0.5s ease, top 0.5s ease, transform 0.5s ease';
 
-      nodeDiv.addEventListener("mouseenter", () => {
-        if (avatarEl instanceof HTMLImageElement)
-          avatarEl.style.filter = "grayscale(0%)";
-        avatarEl.style.opacity = "1";
-        nameLabel.style.opacity = "1";
-      });
+            let avatarEl: HTMLElement;
 
-      nodeDiv.addEventListener("mouseleave", () => {
-        const isHighlighted =
-          highlightedMemberIds.length === 0 ||
-          highlightedMemberIds.includes(node.id);
-        if (searchQuery && isHighlighted) {
-          avatarEl.style.opacity = "1";
-        } else if (searchQuery && !isHighlighted) {
-          avatarEl.style.opacity = "0.3";
-        } else {
-          avatarEl.style.opacity = "1";
-        }
-        nameLabel.style.opacity = "0";
-      });
+            if (node.profilePic) {
+                const img = document.createElement('img');
+                img.src = node.profilePic;
+                img.style.width = '40px';
+                img.style.height = '40px';
+                img.style.borderRadius = '50%';
+                img.style.objectFit = 'cover';
+                img.style.filter = 'none';
+                img.style.display = 'block';
+                img.draggable = false;
+                img.style.transition = 'filter 0.3s ease, opacity 0.3s ease';
+                avatarEl = img;
+            } else {
+                const initialsDiv = document.createElement('div');
+                const initials = (node.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                initialsDiv.textContent = initials;
+                initialsDiv.style.width = '40px';
+                initialsDiv.style.height = '40px';
+                initialsDiv.style.borderRadius = '50%';
+                initialsDiv.style.display = 'flex';
+                initialsDiv.style.alignItems = 'center';
+                initialsDiv.style.justifyContent = 'center';
+                initialsDiv.style.backgroundColor = isDark ? '#888' : '#555';
+                initialsDiv.style.color = isDark ? '#fff' : '#fff';
+                initialsDiv.style.fontSize = '16px';
+                initialsDiv.style.fontWeight = '600';
+                initialsDiv.style.fontFamily = "'Roboto', sans-serif";
+                initialsDiv.style.transition = 'opacity 0.3s ease';
+                avatarEl = initialsDiv;
+            }
 
-      nodeDiv.addEventListener("mousedown", (e) => {
-        (nodeDiv as any).__isDragging = false;
-        dragStartRef.current = { x: e.clientX, y: e.clientY };
-        isDraggingRef.current = false;
-        dragNodeRef.current = node.id;
-        nodeDiv.style.cursor = "grabbing";
+            const nameLabel = document.createElement('div');
+            nameLabel.textContent = node.name || 'Unknown';
+            nameLabel.style.position = 'absolute';
+            nameLabel.style.top = '100%';
+            nameLabel.style.left = '50%';
+            nameLabel.style.transform = 'translateX(-50%)';
+            nameLabel.style.marginTop = '4px';
+            nameLabel.style.padding = '2px 6px';
+            nameLabel.style.background = isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)';
+            nameLabel.style.color = isDark ? '#fff' : '#000';
+            nameLabel.style.fontSize = '11px';
+            nameLabel.style.fontWeight = '500';
+            nameLabel.style.borderRadius = '4px';
+            nameLabel.style.whiteSpace = 'nowrap';
+            nameLabel.style.pointerEvents = 'none';
+            nameLabel.style.opacity = '0';
+            nameLabel.style.transition = 'opacity 0.2s ease';
+            nameLabel.style.zIndex = '1000';
+            nameLabel.style.fontFamily = 'Inter, sans-serif';
 
-        const rect = container.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        const zoomLevel = zoomLevelRef.current;
-        const panOffset = panOffsetRef.current;
-        const transformedX =
-          (node.x! - width / 2) * zoomLevel + width / 2 + panOffset.x;
-        const transformedY =
-          (node.y! - height / 2) * zoomLevel + height / 2 + panOffset.y;
+            nodeDiv.addEventListener('mouseenter', () => {
+                if (avatarEl instanceof HTMLImageElement) avatarEl.style.filter = 'grayscale(0%)';
+                avatarEl.style.opacity = '1';
+                nameLabel.style.opacity = '1';
+            });
 
-        dragOffsetRef.current = {
-          x: mouseX - transformedX,
-          y: mouseY - transformedY,
+            nodeDiv.addEventListener('mouseleave', () => {
+                const isHighlighted = highlightedMemberIds.length === 0 || highlightedMemberIds.includes(node.id);
+                if (searchQuery && isHighlighted) {
+                    avatarEl.style.opacity = '1';
+                } else if (searchQuery && !isHighlighted) {
+                    avatarEl.style.opacity = '0.3';
+                } else {
+                    avatarEl.style.opacity = '1';
+                }
+                nameLabel.style.opacity = '0';
+            });
+
+            nodeDiv.addEventListener('mousedown', (e) => {
+                (nodeDiv as any).__isDragging = false;
+                dragStartRef.current = { x: e.clientX, y: e.clientY };
+                isDraggingRef.current = false;
+                dragNodeRef.current = node.id;
+                nodeDiv.style.cursor = 'grabbing';
+                nodeDiv.style.transition = 'none';
+                const rect = container.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                const transformedX = (node.x - width / 2) * zoomLevel + width / 2 + panOffset.x;
+                const transformedY = (node.y - height / 2) * zoomLevel + height / 2 + panOffset.y;
+                
+                dragOffsetRef.current = {
+                    x: (mouseX - transformedX) * zoomLevel,
+                    y: (mouseY - transformedY) * zoomLevel
+                };
+            });
+
+            nodeDiv.addEventListener('click', (e) => {
+                const wasDragging = (nodeDiv as any).__isDragging === true;
+                if (!wasDragging && !isDraggingRef.current && node.website) {
+                    const url = node.website.startsWith('http') ? node.website : `https://${node.website}`;
+                    window.open(url, '_blank');
+                }
+                (nodeDiv as any).__isDragging = false;
+            });
+
+            nodeDiv.appendChild(avatarEl);
+            nodeDiv.appendChild(nameLabel);
+            container.appendChild(nodeDiv);
+            nodeElementsRef.current.set(node.id, nodeDiv);
+        });
+
+        const handleContainerMouseDown = (e: MouseEvent) => {
+            if (e.target === container || e.target === svgRef.current) {
+                isPanningRef.current = true;
+                container.style.cursor = 'grabbing';
+                panStartRef.current = {
+                    x: e.clientX - panOffset.x,
+                    y: e.clientY - panOffset.y
+                };
+            }
         };
 
         // Pin the node and reheat simulation
