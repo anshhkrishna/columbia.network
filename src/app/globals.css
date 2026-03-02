@@ -448,7 +448,7 @@ a {
 }
 
 .site-link:hover {
-  color: var(--hover-color);
+  color: #001a57;
 }
 
 .name-link {
@@ -458,7 +458,12 @@ a {
 }
 
 .name-link:hover {
-  color: var(--hover-color);
+  color: #001a57;
+}
+
+[data-theme='dark'] .site-link:hover,
+[data-theme='dark'] .name-link:hover {
+  color: #4a7abf;
 }
 
 .table-placeholder {
