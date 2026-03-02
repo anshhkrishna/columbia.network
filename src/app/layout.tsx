@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "columbia.network",
   description: "A webring for Columbia University students",
   icons: {
-    icon: '/favicon.svg',
+    icon: "/crest.png",
   },
   openGraph: {
     title: "columbia.network",
