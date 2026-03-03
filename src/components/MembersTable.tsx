@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Member } from '@/data/members';
-import { FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
 interface MembersTableProps {
@@ -9,6 +9,8 @@ interface MembersTableProps {
 }
 
 export default function MembersTable({ members, searchQuery }: MembersTableProps) {
+    const [expandedMemberId, setExpandedMemberId] = useState<string | null>(null);
+
     const highlightText = (text: string | null | undefined) => {
         if (!text || !searchQuery) return text || '';
         
@@ -29,6 +31,8 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
             return website.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
         }
     };
+
+    const normalizeUrl = (value: string) => (value.startsWith('http') ? value : `https://${value}`);
 
     return (
         <div className="members-table-container">
@@ -52,6 +56,72 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
                 </thead>
                 <tbody>
                     {members.map((member, index) => {
+                        const programDisplay = member.program?.trim()
+                            ? member.program
+                            : member.majors && member.majors.length
+                                ? member.majors.join(' + ')
+                                : '';
+
+                        const isExpanded = Boolean(searchQuery) || expandedMemberId === member.id;
+                        const allLinks: Array<{
+                            key: string;
+                            href: string;
+                            title: string;
+                            icon: React.ReactNode;
+                            external?: boolean;
+                        }> = [];
+
+                        if (member.instagram) {
+                            allLinks.push({
+                                key: 'instagram',
+                                href: member.instagram,
+                                title: 'Instagram',
+                                icon: <FaInstagram size={16} />,
+                                external: true,
+                            });
+                        }
+                        if (member.twitter) {
+                            allLinks.push({
+                                key: 'twitter',
+                                href: member.twitter,
+                                title: 'Twitter/X',
+                                icon: <FaXTwitter size={16} />,
+                                external: true,
+                            });
+                        }
+                        if (member.linkedin) {
+                            allLinks.push({
+                                key: 'linkedin',
+                                href: member.linkedin,
+                                title: 'LinkedIn',
+                                icon: <FaLinkedin size={16} />,
+                                external: true,
+                            });
+                        }
+                        if (member.email && member.email.trim()) {
+                            allLinks.push({
+                                key: 'email',
+                                href: `mailto:${member.email.trim()}`,
+                                title: 'Email',
+                                icon: <FaEnvelope size={16} />,
+                            });
+                        }
+                        if (member.github && member.github.trim()) {
+                            allLinks.push({
+                                key: 'github',
+                                href: normalizeUrl(member.github),
+                                title: 'GitHub',
+                                icon: <FaGithub size={16} />,
+                                external: true,
+                            });
+                        }
+
+                        const linkPriority = ['email', 'github', 'linkedin', 'twitter', 'instagram'];
+                        const singleLink = allLinks
+                            .slice()
+                            .sort((a, b) => linkPriority.indexOf(a.key) - linkPriority.indexOf(b.key))[0];
+                        const visibleLinks = isExpanded ? allLinks : singleLink ? [singleLink] : [];
+
                         return (
                         <tr key={member.id}>
                             <td className="user-cell">
@@ -68,20 +138,16 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
                                         {(member.name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
                                     </div>
                                 )}
-                                {member.website && member.website.trim() ? (
-                                    <a 
-                                        href={member.website.startsWith('http') ? member.website : `https://${member.website}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="name-link"
-                                    >
-                                        {highlightText(member.name) || 'No name'}
-                                    </a>
-                                ) : (
-                                <span>{highlightText(member.name) || 'No name'}</span>
-                                )}
+                                <button
+                                    type="button"
+                                    className="name-button"
+                                    onClick={() => setExpandedMemberId(prev => (prev === member.id ? null : member.id))}
+                                    aria-expanded={isExpanded}
+                                >
+                                    {highlightText(member.name) || 'No name'}
+                                </button>
                             </td>
-                            <td>{highlightText(member.program) || '—'}</td>
+                            <td>{highlightText(programDisplay) || '—'}</td>
                             <td>
                                 {member.website && member.website.trim() ? (
                                     <a 
@@ -98,40 +164,20 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
                             </td>
                             <td>
                                 <div className="social-icons">
-                                    {member.instagram && (
-                                        <a 
-                                            href={member.instagram} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer" 
+                                    {visibleLinks.map((link) => (
+                                        <a
+                                            key={link.key}
+                                            href={link.href}
+                                            {...(link.external
+                                                ? { target: "_blank", rel: "noopener noreferrer" }
+                                                : {})}
                                             className="social-icon-link"
-                                            title="Instagram"
+                                            title={link.title}
                                         >
-                                            <FaInstagram size={16} />
+                                            {link.icon}
                                         </a>
-                                    )}
-                                    {member.twitter && (
-                                        <a 
-                                            href={member.twitter} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer" 
-                                            className="social-icon-link"
-                                            title="Twitter/X"
-                                        >
-                                            <FaXTwitter size={16} />
-                                        </a>
-                                    )}
-                                    {member.linkedin && (
-                                        <a 
-                                            href={member.linkedin} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer" 
-                                            className="social-icon-link"
-                                            title="LinkedIn"
-                                        >
-                                            <FaLinkedin size={16} />
-                                        </a>
-                                    )}
-                                    {!member.instagram && !member.twitter && !member.linkedin && (
+                                    ))}
+                                    {visibleLinks.length === 0 && (
                                         <span className="table-placeholder">—</span>
                                     )}
                                 </div>

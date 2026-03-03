@@ -27,6 +27,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
     const [activeRoles, setActiveRoles] = useState<Set<string>>(new Set());
     const [activeVerticals, setActiveVerticals] = useState<Set<string>>(new Set());
     const [showFilters, setShowFilters] = useState(false);
+    const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
     useEffect(() => {
         setShuffledMembers(shuffleArray(members));
@@ -67,6 +68,10 @@ export default function SearchableContent({ members, connections }: SearchableCo
                 member.name?.toLowerCase().includes(q) ||
                 member.program?.toLowerCase().includes(q) ||
                 member.website?.toLowerCase().includes(q) ||
+                member.github?.toLowerCase().includes(q) ||
+                member.email?.toLowerCase().includes(q) ||
+                member.majors?.some(m => m.toLowerCase().includes(q)) ||
+                member.minors?.some(m => m.toLowerCase().includes(q)) ||
                 member.roles?.some(r => r.toLowerCase().includes(q)) ||
                 member.verticals?.some(v => v.toLowerCase().includes(q)) ||
                 member.year?.includes(q)
@@ -102,22 +107,32 @@ export default function SearchableContent({ members, connections }: SearchableCo
             <div className="content-wrapper">
                 <div className="header-section">
                     <div className="title-row">
-                        <h1 className="title">columbia.network</h1>
+                        <h1 className="title">
+                            <span className="cu-accent">columbia</span>.network
+                            <span className="version-pill">v1.0</span>
+                        </h1>
                     </div>
                     <div className="description">
                         <p>welcome to the webring for columbia university students.</p>
                         <p>
                             columbia packs an unusually high density of talented engineers, designers, 
                             creators, and researchers into one campus in the middle of new york city. 
-                            this is the place to find the people doing things.
+                            this is the place to find people who are doing things.
                         </p>
                         <p>
-                            want to join?{" "}
-                            <a
-                                href="/join"
-                                className="join-link"
+                            want to join? <a 
+                                href="https://github.com/anshhkrishna/columbia.network#join-the-webring" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="join-link join-link-blue"
                             >
-                                fill out the form
+                                submit a pull request
+                            </a>{' '}
+                            or <a
+                                href="/join"
+                                className="join-link join-link-blue"
+                            >
+                                fill the auto-pr form
                             </a>
                         </p>
                     </div>
@@ -210,7 +225,11 @@ export default function SearchableContent({ members, connections }: SearchableCo
                     connections={connections}
                     highlightedMemberIds={filteredMembers.map(m => m.id)}
                     searchQuery={searchQuery}
-                    onNodeClick={(firstName) => setSearchQuery(firstName)}
+                    selectedMemberId={selectedMemberId}
+                    onNodeClick={(memberId, firstName) => {
+                        setSelectedMemberId(memberId);
+                        setSearchQuery(firstName);
+                    }}
                 />
             </div>
 

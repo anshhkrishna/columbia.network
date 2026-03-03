@@ -13,18 +13,12 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     document.documentElement.setAttribute('data-theme', 'dark');
   }, []);
 
   const toggleTheme = () => {};
-
-  if (!mounted) {
-    return <>{children}</>;
-  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
@@ -43,4 +37,3 @@ export function useTheme() {
   }
   return context;
 }
-

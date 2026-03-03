@@ -20,7 +20,8 @@ interface NetworkGraphProps {
   connections: Connection[];
   highlightedMemberIds?: string[];
   searchQuery?: string;
-  onNodeClick?: (firstName: string) => void;
+  selectedMemberId?: string | null;
+  onNodeClick?: (memberId: string, firstName: string) => void;
 }
 
 interface SimNode extends SimulationNodeDatum {
@@ -28,6 +29,7 @@ interface SimNode extends SimulationNodeDatum {
   name: string | null;
   profilePic: string | undefined;
   website: string | null | undefined;
+  github: string | null | undefined;
 }
 
 interface SimLink extends SimulationLinkDatum<SimNode> {
@@ -35,17 +37,22 @@ interface SimLink extends SimulationLinkDatum<SimNode> {
   target: string | SimNode;
 }
 
+type NodeDiv = HTMLDivElement & {
+  __isDragging?: boolean;
+};
+
 export default function NetworkGraph({
   members,
   connections,
   highlightedMemberIds = [],
   searchQuery = "",
+  selectedMemberId = null,
   onNodeClick,
 }: NetworkGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const nodesRef = useRef<SimNode[]>([]);
-  const nodeElementsRef = useRef<Map<string, HTMLElement>>(new Map());
+  const nodeElementsRef = useRef<Map<string, NodeDiv>>(new Map());
   const simulationRef = useRef<Simulation<SimNode, SimLink> | null>(null);
   const dragNodeRef = useRef<string | null>(null);
   const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -56,7 +63,6 @@ export default function NetworkGraph({
   const [isDark, setIsDark] = useState(false);
   const zoomLevelRef = useRef(1);
   const panOffsetRef = useRef({ x: 0, y: 0 });
-  const [, forceRender] = useState(0);
   const dimensionsRef = useRef({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -91,6 +97,9 @@ export default function NetworkGraph({
     connections.forEach((conn) => {
       const fromNode = nodes.find((n) => n.id === conn.fromId);
       const toNode = nodes.find((n) => n.id === conn.toId);
+      const isSelectedLink =
+        selectedMemberId &&
+        (conn.fromId === selectedMemberId || conn.toId === selectedMemberId);
 
       if (
         fromNode &&
@@ -116,9 +125,11 @@ export default function NetworkGraph({
         line.setAttribute("y1", y1.toString());
         line.setAttribute("x2", x2.toString());
         line.setAttribute("y2", y2.toString());
-        line.setAttribute("stroke", isDark ? "#888" : "#555");
-        line.setAttribute("stroke-width", "2");
-        line.setAttribute("opacity", "0.6");
+        const accent = "#6cb4e4";
+        const highlight = "#ffffff";
+        line.setAttribute("stroke", isSelectedLink ? highlight : accent);
+        line.setAttribute("stroke-width", isSelectedLink ? "3" : "2");
+        line.setAttribute("opacity", isSelectedLink ? "1" : "0.35");
         svg.appendChild(line);
       }
     });
@@ -140,6 +151,15 @@ export default function NetworkGraph({
           const isHighlighted =
             highlightedMemberIds.length === 0 ||
             highlightedMemberIds.includes(node.id);
+          const isSelected = selectedMemberId === node.id;
+          const isNeighbor =
+            !!selectedMemberId &&
+            connections.some(
+              (c) =>
+                (c.fromId === selectedMemberId && c.toId === node.id) ||
+                (c.toId === selectedMemberId && c.fromId === node.id)
+            );
+
           if (searchQuery && isHighlighted) {
             avatarChild.style.opacity = "1";
           } else if (searchQuery && !isHighlighted) {
@@ -147,10 +167,23 @@ export default function NetworkGraph({
           } else {
             avatarChild.style.opacity = "1";
           }
+
+          if (isSelected) {
+            avatarChild.style.boxShadow = "0 0 0 3px rgba(108,180,228,0.85)";
+            avatarChild.style.border = "2px solid #6cb4e4";
+            avatarChild.style.filter = "none";
+          } else if (isNeighbor) {
+            avatarChild.style.boxShadow = "0 0 0 3px rgba(108,180,228,0.55)";
+            avatarChild.style.border = "2px solid rgba(108,180,228,0.9)";
+            avatarChild.style.filter = "none";
+          } else {
+            avatarChild.style.boxShadow = "none";
+            avatarChild.style.border = "none";
+          }
         }
       }
     });
-  }, [connections, isDark, highlightedMemberIds, searchQuery]);
+  }, [connections, highlightedMemberIds, searchQuery, selectedMemberId]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -175,13 +208,11 @@ export default function NetworkGraph({
 
         panOffsetRef.current = { x: offsetX, y: offsetY };
         updateVisuals();
-        forceRender((c) => c + 1);
       }
     } else if (!searchQuery) {
       zoomLevelRef.current = 1;
       panOffsetRef.current = { x: 0, y: 0 };
       updateVisuals();
-      forceRender((c) => c + 1);
     }
   }, [searchQuery, highlightedMemberIds, updateVisuals]);
 
@@ -214,6 +245,7 @@ export default function NetworkGraph({
         name: member.name,
         profilePic: member.profilePic,
         website: member.website,
+        github: member.github,
         x: width / 2 + radius * Math.cos(angle),
         y: height / 2 + radius * Math.sin(angle),
       };
@@ -274,7 +306,7 @@ export default function NetworkGraph({
 
     // Create DOM nodes
     nodesRef.current.forEach((node) => {
-      const nodeDiv = document.createElement("div");
+      const nodeDiv = document.createElement("div") as NodeDiv;
       nodeDiv.style.position = "absolute";
       nodeDiv.style.cursor = "grab";
       nodeDiv.style.userSelect = "none";
@@ -341,10 +373,13 @@ export default function NetworkGraph({
       nameLabel.style.fontFamily = "Inter, sans-serif";
 
       nodeDiv.addEventListener("mouseenter", () => {
-        if (avatarEl instanceof HTMLImageElement)
-          avatarEl.style.filter = "grayscale(0%)";
+        if (avatarEl instanceof HTMLImageElement) avatarEl.style.filter = "grayscale(0%)";
         avatarEl.style.opacity = "1";
+        avatarEl.style.transform = "scale(1.15)";
         nameLabel.style.opacity = "1";
+        nameLabel.style.background = "rgba(12,16,24,0.85)";
+        nameLabel.style.border = "1px solid #6cb4e4";
+        nameLabel.style.color = "#6cb4e4";
       });
 
       nodeDiv.addEventListener("mouseleave", () => {
@@ -358,11 +393,17 @@ export default function NetworkGraph({
         } else {
           avatarEl.style.opacity = "1";
         }
+        avatarEl.style.transform = "scale(1)";
         nameLabel.style.opacity = "0";
+        nameLabel.style.background = isDark
+          ? "rgba(0, 0, 0, 0.8)"
+          : "rgba(255, 255, 255, 0.9)";
+        nameLabel.style.border = "none";
+        nameLabel.style.color = isDark ? "#fff" : "#000";
       });
 
       nodeDiv.addEventListener("mousedown", (e) => {
-        (nodeDiv as any).__isDragging = false;
+        nodeDiv.__isDragging = false;
         dragStartRef.current = { x: e.clientX, y: e.clientY };
         isDraggingRef.current = false;
         dragNodeRef.current = node.id;
@@ -389,20 +430,26 @@ export default function NetworkGraph({
         simulation.alpha(physics.dragAlpha).restart();
       });
 
-      nodeDiv.addEventListener("click", (e) => {
-        const wasDragging = (nodeDiv as any).__isDragging === true;
+      nodeDiv.addEventListener("click", () => {
+        const wasDragging = nodeDiv.__isDragging === true;
         if (!wasDragging && !isDraggingRef.current) {
+          if (onNodeClick && node.name) {
+            const firstName = node.name.split(" ")[0].toLowerCase();
+            onNodeClick(node.id, firstName);
+          }
           if (node.website) {
             const url = node.website.startsWith("http")
               ? node.website
               : `https://${node.website}`;
             window.open(url, "_blank");
-          } else if (onNodeClick && node.name) {
-            const firstName = node.name.split(" ")[0].toLowerCase();
-            onNodeClick(firstName);
+          } else if (node.github) {
+            const url = node.github.startsWith("http")
+              ? node.github
+              : `https://${node.github}`;
+            window.open(url, "_blank");
           }
         }
-        (nodeDiv as any).__isDragging = false;
+        nodeDiv.__isDragging = false;
       });
 
       nodeDiv.appendChild(avatarEl);
@@ -431,7 +478,7 @@ export default function NetworkGraph({
           isDraggingRef.current = true;
           const nodeDiv = nodeElementsRef.current.get(dragNodeRef.current);
           if (nodeDiv) {
-            (nodeDiv as any).__isDragging = true;
+            nodeDiv.__isDragging = true;
           }
         }
 
@@ -514,7 +561,6 @@ export default function NetworkGraph({
       panOffsetRef.current = { x: newPanX, y: newPanY };
 
       updateVisuals();
-      forceRender((c) => c + 1);
     };
 
     container.addEventListener("wheel", handleWheel, { passive: false });

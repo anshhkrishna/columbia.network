@@ -1,411 +1,544 @@
-"use client";
+'use client';
 
-import React, { useState, useRef } from "react";
-import Link from "next/link";
-import { ROLE_OPTIONS, VERTICAL_OPTIONS, members } from "@/data/members";
+import React, { useMemo, useState } from 'react';
+import Link from 'next/link';
+import AsciiBackground from '@/components/AsciiBackground';
+import { ROLE_OPTIONS, VERTICAL_OPTIONS } from '@/data/members';
+import { ACADEMIC_OPTIONS } from '@/data/academics';
 
-const INITIAL_FORM = {
-  name: "",
-  website: "",
-  program: "",
-  roles: [] as string[],
-  verticals: [] as string[],
-  notes: "",
-  profilePic: "",
-  linkedin: "",
-  twitter: "",
-  github: "",
-  connections: [] as string[],
+type JoinPayload = {
+  name: string;
+  uni: string;
+  website?: string;
+  program?: string;
+  year?: string;
+  roles?: string[];
+  verticals?: string[];
+  majors?: string[];
+  minors?: string[];
+  clubs?: string[];
+  profilePic?: string;
+  connections?: string[];
+  email?: string;
+  instagram?: string;
+  twitter?: string;
+  linkedin?: string;
+  github?: string;
 };
 
-export default function JoinPage() {
-  const [form, setForm] = useState(INITIAL_FORM);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [profilePreview, setProfilePreview] = useState<string | null>(null);
-  const [memberSnippet, setMemberSnippet] = useState<string | null>(null);
-  const [prUrl, setPrUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+type JoinFormData = {
+  name: string;
+  uni: string;
+  website: string;
+  year: string;
+  roles: string[];
+  verticals: string[];
+  majors: string[];
+  minors: string[];
+  clubs: string;
+  profilePic: string;
+  profileFile: File | null;
+  connections: string;
+  email: string;
+  instagram: string;
+  twitter: string;
+  linkedin: string;
+  github: string;
+};
 
-  const toggleMultiSelect = (
-    key: "roles" | "verticals" | "connections",
-    value: string
-  ) => {
-    setForm((prev) => {
-      const current = new Set(prev[key]);
-      if (current.has(value)) {
-        current.delete(value);
-      } else {
-        current.add(value);
-      }
-      return {
-        ...prev,
-        [key]: Array.from(current),
-      };
+const parseList = (value: string) =>
+  value
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean);
+
+export default function JoinPage() {
+  const [formData, setFormData] = useState<JoinFormData>({
+    name: '',
+    uni: '',
+    website: '',
+    year: '',
+    roles: [],
+    verticals: [],
+    majors: [],
+    minors: [],
+    clubs: '',
+    profilePic: '/photos/your-name.jpg',
+    profileFile: null as File | null,
+    connections: '',
+    email: '',
+    instagram: '',
+    twitter: '',
+    linkedin: '',
+    github: '',
+  });
+  const [majorQuery, setMajorQuery] = useState('');
+  const [minorQuery, setMinorQuery] = useState('');
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+  const [pullRequestUrl, setPullRequestUrl] = useState('');
+
+  const joinIssueUrl = useMemo(() => {
+    const body = [
+      'please add me to columbia.network',
+      '',
+      '**name**:',
+      '**uni**:',
+      '**email**:',
+      '**website**:',
+      '**majors**:',
+      '**minors**:',
+      '**year**:',
+      '**roles**:',
+      '**verticals**:',
+      '**clubs**:',
+      '**profile pic path**: /photos/your-name.jpg',
+      '**connections**:',
+      '',
+      'optional socials:',
+      '- instagram:',
+      '- twitter/x:',
+      '- linkedin:',
+      '- github:',
+      '',
+      'if the form fails, this issue will still reach the maintainers.',
+    ].join('\n');
+
+    const params = new URLSearchParams({
+      title: 'add me to columbia.network',
+      body,
+    });
+
+    return `https://github.com/anshhkrishna/columbia.network/issues/new?${params.toString()}`;
+  }, []);
+
+  const handleInputChange = <K extends keyof JoinFormData>(field: K, value: JoinFormData[K]) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const toggleTag = (field: 'roles' | 'verticals', tag: string) => {
+    setFormData((prev) => {
+      const current = prev[field];
+      const next = current.includes(tag) ? current.filter((t) => t !== tag) : [...current, tag];
+      return { ...prev, [field]: next };
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError(null);
-    setPrUrl(null);
+  const toggleAcademicTag = (field: 'majors' | 'minors', tag: string) => {
+    setFormData((prev) => {
+      const current = prev[field];
+      const next = current.includes(tag) ? current.filter((t) => t !== tag) : [...current, tag];
+      return { ...prev, [field]: next };
+    });
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!formData.name.trim() || !formData.uni.trim() || !formData.year.trim() || formData.majors.length === 0) {
+      setStatus('error');
+      setMessage('name, UNI, email, major(s), and year are required.');
+      return;
+    }
+    if (!formData.email.trim()) {
+      setStatus('error');
+      setMessage('email is required.');
+      return;
+    }
+
+    setStatus('submitting');
+    setMessage('');
+    setPullRequestUrl('');
+
+    const program = formData.majors.join(' + ');
+
+    const payload: JoinPayload = {
+      name: formData.name.trim(),
+      uni: formData.uni.trim(),
+      website: formData.website.trim() || undefined,
+      program,
+      year: formData.year.trim(),
+      roles: formData.roles.length ? formData.roles : undefined,
+      verticals: formData.verticals.length ? formData.verticals : undefined,
+      majors: formData.majors,
+      minors: formData.minors,
+      clubs: parseList(formData.clubs),
+      profilePic: formData.profilePic.trim() || undefined,
+      connections: parseList(formData.connections),
+      email: formData.email.trim(),
+      instagram: formData.instagram.trim() || undefined,
+      twitter: formData.twitter.trim() || undefined,
+      linkedin: formData.linkedin.trim() || undefined,
+      github: formData.github.trim() || undefined,
+    };
+
+    // If a file was uploaded, include a placeholder note in the PR body via profilePic
+    if (formData.profileFile) {
+      payload.profilePic = payload.profilePic || '/photos/uploaded-via-form.jpg';
+    }
 
     try {
-      const payload = {
-        ...form,
-        name: form.name.trim(),
-        website: form.website.trim() || "",
-        linkedin: form.linkedin.trim(),
-        twitter: form.twitter.trim(),
-        github: form.github.trim(),
-        profilePic: form.profilePic.trim(),
-      };
-
-      const res = await fetch("/api/join", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await fetch('/api/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
-      if (!res.ok) {
-        throw new Error("Request failed");
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result?.error || 'failed to create pull request.');
       }
-
-      const data = (await res.json()) as { memberSnippet?: unknown; prUrl?: string | null };
-      if (data.prUrl) setPrUrl(data.prUrl);
-
-      const slug =
-        typeof payload.name === "string"
-          ? payload.name
-              .toLowerCase()
-              .trim()
-              .replace(/[^a-z0-9]+/g, "-")
-              .replace(/^-+|-+$/g, "")
-          : "";
-
-      const snippetObject = {
-        id: slug || "your-id-here",
-        name: payload.name,
-        website: payload.website || "",
-        program: payload.program || undefined,
-        roles:
-          payload.roles && payload.roles.length ? payload.roles : undefined,
-        verticals:
-          payload.verticals && payload.verticals.length
-            ? payload.verticals
-            : undefined,
-        profilePic: payload.profilePic || undefined,
-        twitter: payload.twitter || undefined,
-        linkedin: payload.linkedin || undefined,
-        connections:
-          payload.connections && payload.connections.length
-            ? payload.connections
-            : undefined,
-      };
-
-      const snippetString = JSON.stringify(snippetObject, null, 2);
-      setMemberSnippet(snippetString);
-
-      setSubmitted(true);
-      setForm(INITIAL_FORM);
-      setProfilePreview(null);
-    } catch (err) {
-      setError("Something went wrong. Please try again later.");
-    } finally {
-      setSubmitting(false);
+      setStatus('success');
+      setMessage('pull request created!');
+      setPullRequestUrl(result.pullRequestUrl);
+      setFormData({
+        name: '',
+        uni: '',
+        website: '',
+        year: '',
+        roles: [],
+        verticals: [],
+        majors: [],
+        minors: [],
+        clubs: '',
+        profilePic: '/photos/your-name.jpg',
+        profileFile: null,
+        connections: '',
+        email: '',
+        instagram: '',
+        twitter: '',
+        linkedin: '',
+        github: '',
+      });
+      setMajorQuery('');
+      setMinorQuery('');
+    } catch (error) {
+      setStatus('error');
+      setMessage(error instanceof Error ? error.message : 'something went wrong.');
     }
   };
 
-  const handleProfileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = typeof reader.result === "string" ? reader.result : "";
-      if (!dataUrl) return;
-      setForm((prev) => ({ ...prev, profilePic: dataUrl }));
-      setProfilePreview(dataUrl);
-    };
-    reader.readAsDataURL(file);
-  };
-
   return (
-    <main className="main-container">
-      <div className="content-wrapper">
-        <div className="header-section">
-          <div className="title-row">
-            <h1 className="title">join columbia.network</h1>
-          </div>
-          <div className="description">
-            <p>
-              this should take about a minute. once you submit, we&apos;ll
-              review and add you to the graph + directory.
-            </p>
-            <p>
-              we try to keep columbia.network high-signal and curated, so share
-              the best links and context you have.
-            </p>
-            <p>
-              <Link href="/" className="join-link">
-                ← back to directory
-              </Link>
-            </p>
-          </div>
+    <div className="join-page">
+      <AsciiBackground />
+      <div className="join-page-card">
+        <div className="join-page-header">
+          <h1>
+            join <span className="cu-accent">columbia</span>.network
+          </h1>
+          <p className="join-page-subtext">
+            fill this form and we will open a pull request for you. need to bail?{' '}
+            <a className="join-link join-link-blue" href={joinIssueUrl} target="_blank" rel="noopener noreferrer">
+              file an issue instead
+            </a>
+          </p>
+          <div className="join-spacer" />
         </div>
 
-        <div className="table-section">
-          <form className="join-form" onSubmit={handleSubmit}>
-            <section className="join-section">
-              <p className="join-section-label">what do you do?</p>
-              <div className="join-filters">
-                <div className="filter-group">
-                  <span className="filter-label">roles</span>
-                  <div className="filter-tags">
-                    {ROLE_OPTIONS.map((role) => (
-                      <button
-                        key={role}
-                        type="button"
-                        className={`filter-tag ${
-                          form.roles.includes(role) ? "filter-tag-active" : ""
-                        }`}
-                        onClick={() => toggleMultiSelect("roles", role)}
-                      >
-                        {role}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+        <form className="join-form" onSubmit={handleSubmit}>
+          <div className="join-row">
+            <label>name*</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              placeholder="your full name"
+              required
+            />
+          </div>
 
-                <div className="filter-group">
-                  <span className="filter-label">verticals</span>
-                  <div className="filter-tags">
-                    {VERTICAL_OPTIONS.map((vertical) => (
-                      <button
-                        key={vertical}
-                        type="button"
-                        className={`filter-tag ${
-                          form.verticals.includes(vertical)
-                            ? "filter-tag-active"
-                            : ""
-                        }`}
-                        onClick={() => toggleMultiSelect("verticals", vertical)}
-                      >
-                        {vertical}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+          <div className="join-row">
+            <label>UNI*</label>
+            <input
+              type="text"
+              value={formData.uni}
+              onChange={(e) => handleInputChange('uni', e.target.value)}
+              placeholder="abc1234"
+              required
+            />
+          </div>
+
+          <div className="join-row">
+            <label>email*</label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              placeholder="uni@columbia.edu"
+              autoComplete="email"
+              required
+            />
+          </div>
+
+          <div className="join-row">
+            <label>website</label>
+            <input
+              type="url"
+              value={formData.website}
+              onChange={(e) => handleInputChange('website', e.target.value)}
+              placeholder="https://yourwebsite.com"
+            />
+          </div>
+
+          <div className="join-row">
+            <label>major(s)*</label>
+            <input
+              type="text"
+              value={majorQuery}
+              onChange={(e) => setMajorQuery(e.target.value)}
+              placeholder="search majors/minors..."
+            />
+            {formData.majors.length > 0 && (
+              <div className="filter-tags join-tags join-selected-tags">
+                {formData.majors.map((major) => (
+                  <button
+                    key={major}
+                    type="button"
+                    className="filter-tag filter-tag-active join-selected-tag"
+                    onClick={() => toggleAcademicTag('majors', major)}
+                    aria-label={`remove major ${major}`}
+                  >
+                    {major} <span className="join-selected-x">x</span>
+                  </button>
+                ))}
               </div>
-            </section>
-
-            <section className="join-section">
-              <div className="join-form-grid">
-                <label className="join-field">
-                  <span>full name</span>
-                  <input
-                    type="text"
-                    required
-                    value={form.name}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, name: e.target.value }))
-                    }
-                  />
-                </label>
-
-                <label className="join-field">
-                  <span>website / portfolio</span>
-                  <input
-                    type="url"
-                    placeholder="https://"
-                    value={form.website}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, website: e.target.value }))
-                    }
-                  />
-                </label>
-
-                <label className="join-field">
-                  <span>linkedin</span>
-                  <input
-                    type="url"
-                    placeholder="https://linkedin.com/in/you"
-                    value={form.linkedin}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, linkedin: e.target.value }))
-                    }
-                  />
-                </label>
-
-                <label className="join-field">
-                  <span>twitter / x</span>
-                  <input
-                    type="url"
-                    placeholder="https://x.com/you"
-                    value={form.twitter}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, twitter: e.target.value }))
-                    }
-                  />
-                </label>
-
-                <label className="join-field">
-                  <span>github</span>
-                  <input
-                    type="url"
-                    placeholder="https://github.com/you"
-                    value={form.github}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, github: e.target.value }))
-                    }
-                  />
-                </label>
-
-                <label className="join-field">
-                  <span>profile photo</span>
-                  <div className="join-avatar-row">
-                    <button
-                      type="button"
-                      className="join-upload-btn"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      upload image
-                    </button>
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      onChange={handleProfileUpload}
-                    />
-                    <input
-                      type="url"
-                      placeholder="or paste image url"
-                      value={form.profilePic.startsWith("data:")
-                        ? ""
-                        : form.profilePic}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          profilePic: e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-                  {profilePreview && (
-                    <div className="join-avatar-preview">
-                      <img src={profilePreview} alt="profile preview" />
-                    </div>
-                  )}
-                </label>
-
-                <label className="join-field">
-                  <span>program</span>
-                  <input
-                    type="text"
-                    placeholder="cs, econ-math, etc."
-                    value={form.program}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, program: e.target.value }))
-                    }
-                  />
-                </label>
-              </div>
-            </section>
-
-            <section className="join-section join-connections">
-              <p className="join-section-label">who do you already know?</p>
-              <div className="join-filters">
-                <div className="filter-group">
-                  <span className="filter-label">connections</span>
-                  <div className="filter-tags">
-                    {members.map((member) => (
-                      <button
-                        key={member.id}
-                        type="button"
-                        className={`filter-tag ${
-                          form.connections.includes(member.id)
-                            ? "filter-tag-active"
-                            : ""
-                        }`}
-                        onClick={() =>
-                          toggleMultiSelect("connections", member.id)
-                        }
-                      >
-                        {member.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <label className="join-field join-notes">
-              <span>what are you building / working on?</span>
-              <textarea
-                rows={4}
-                value={form.notes}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, notes: e.target.value }))
-                }
-              />
-            </label>
-
-            {error && <p className="join-error">{error}</p>}
-            {submitted && !error && (
-              <>
-                <p className="join-success">
-                  thanks for submitting. we&apos;ll review and get back to you.
-                </p>
-                {prUrl && (
-                  <p className="join-success">
-                    we opened a pull request for you.{" "}
-                    <a
-                      href={prUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="join-link"
-                    >
-                      view PR
-                    </a>
-                  </p>
-                )}
-              </>
             )}
-
-            {memberSnippet && !error && !prUrl && (
-              <div className="join-snippet">
-                <p className="join-snippet-label">
-                  copy this into <code>members.ts</code>:
-                </p>
-                <pre className="join-snippet-code">
-{memberSnippet}
-                </pre>
+            <div className="filter-tags join-tags join-tags-scroll">
+              {ACADEMIC_OPTIONS.filter((option) => {
+                const q = majorQuery.trim().toLowerCase();
+                if (!q) return true;
+                return option.toLowerCase().includes(q);
+              })
+                .filter((option) => !formData.majors.includes(option))
+                .map((option) => (
                 <button
+                  key={option}
                   type="button"
-                  className="join-snippet-copy"
-                  onClick={() => navigator.clipboard.writeText(memberSnippet)}
+                  className={`filter-tag ${formData.majors.includes(option) ? 'filter-tag-active' : ''}`}
+                  onClick={() => toggleAcademicTag('majors', option)}
+                  aria-pressed={formData.majors.includes(option)}
                 >
-                  copy snippet
+                  {option}
                 </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="join-row">
+            <label>minor(s)</label>
+            <input
+              type="text"
+              value={minorQuery}
+              onChange={(e) => setMinorQuery(e.target.value)}
+              placeholder="search minors..."
+            />
+            {formData.minors.length > 0 && (
+              <div className="filter-tags join-tags join-selected-tags">
+                {formData.minors.map((minor) => (
+                  <button
+                    key={minor}
+                    type="button"
+                    className="filter-tag filter-tag-active join-selected-tag"
+                    onClick={() => toggleAcademicTag('minors', minor)}
+                    aria-label={`remove minor ${minor}`}
+                  >
+                    {minor} <span className="join-selected-x">x</span>
+                  </button>
+                ))}
               </div>
             )}
+            <div className="filter-tags join-tags join-tags-scroll">
+              {ACADEMIC_OPTIONS.filter((option) => {
+                const q = minorQuery.trim().toLowerCase();
+                if (!q) return true;
+                return option.toLowerCase().includes(q);
+              })
+                .filter((option) => !formData.minors.includes(option))
+                .map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`filter-tag ${formData.minors.includes(option) ? 'filter-tag-active' : ''}`}
+                  onClick={() => toggleAcademicTag('minors', option)}
+                  aria-pressed={formData.minors.includes(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
 
-            <button
-              type="submit"
-              className="join-submit-btn"
-              disabled={submitting}
-            >
-              {submitting ? "submitting…" : "submit application"}
-            </button>
-          </form>
+          <div className="join-row">
+            <label>year*</label>
+            <input
+              type="text"
+              value={formData.year}
+              onChange={(e) => handleInputChange('year', e.target.value)}
+              placeholder="2027"
+              required
+            />
+          </div>
+
+          <div className="join-row">
+            <label>roles</label>
+            {formData.roles.length > 0 && (
+              <div className="filter-tags join-tags join-selected-tags">
+                {formData.roles.map((role) => (
+                  <button
+                    key={role}
+                    type="button"
+                    className="filter-tag filter-tag-active join-selected-tag"
+                    onClick={() => toggleTag('roles', role)}
+                    aria-label={`remove role ${role}`}
+                  >
+                    {role} <span className="join-selected-x">x</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="filter-tags join-tags">
+              {ROLE_OPTIONS.filter((role) => !formData.roles.includes(role)).map((role) => (
+                <button
+                  key={role}
+                  type="button"
+                  className={`filter-tag ${formData.roles.includes(role) ? 'filter-tag-active' : ''}`}
+                  onClick={() => toggleTag('roles', role)}
+                  aria-pressed={formData.roles.includes(role)}
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="join-row">
+            <label>verticals</label>
+            {formData.verticals.length > 0 && (
+              <div className="filter-tags join-tags join-selected-tags">
+                {formData.verticals.map((vertical) => (
+                  <button
+                    key={vertical}
+                    type="button"
+                    className="filter-tag filter-tag-active join-selected-tag"
+                    onClick={() => toggleTag('verticals', vertical)}
+                    aria-label={`remove vertical ${vertical}`}
+                  >
+                    {vertical} <span className="join-selected-x">x</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="filter-tags join-tags">
+              {VERTICAL_OPTIONS.filter((vertical) => !formData.verticals.includes(vertical)).map((vertical) => (
+                <button
+                  key={vertical}
+                  type="button"
+                  className={`filter-tag ${formData.verticals.includes(vertical) ? 'filter-tag-active' : ''}`}
+                  onClick={() => toggleTag('verticals', vertical)}
+                  aria-pressed={formData.verticals.includes(vertical)}
+                >
+                  {vertical}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="join-row">
+            <label>clubs (comma separated)</label>
+            <input
+              type="text"
+              value={formData.clubs}
+              onChange={(e) => handleInputChange('clubs', e.target.value)}
+              placeholder="columbia data science society"
+            />
+          </div>
+
+          <div className="join-row">
+            <label>profile picture</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleInputChange('profileFile', e.target.files?.[0] || null)}
+            />
+          </div>
+
+          <div className="join-row">
+            <label>connections (comma separated ids)</label>
+            <input
+              type="text"
+              value={formData.connections}
+              onChange={(e) => handleInputChange('connections', e.target.value)}
+              placeholder="ansh-krishna, alex-jerpelea"
+            />
+          </div>
+
+          <div className="join-row">
+              <label>instagram</label>
+              <input
+                type="url"
+                value={formData.instagram}
+                onChange={(e) => handleInputChange('instagram', e.target.value)}
+                placeholder="https://instagram.com/you"
+              />
+          </div>
+
+          <div className="join-row">
+              <label>twitter/x</label>
+              <input
+                type="url"
+                value={formData.twitter}
+                onChange={(e) => handleInputChange('twitter', e.target.value)}
+                placeholder="https://x.com/you"
+              />
+          </div>
+
+          <div className="join-row">
+              <label>linkedin</label>
+              <input
+                type="url"
+                value={formData.linkedin}
+                onChange={(e) => handleInputChange('linkedin', e.target.value)}
+                placeholder="https://linkedin.com/in/you"
+              />
+          </div>
+
+          <div className="join-row">
+              <label>github</label>
+              <input
+                type="url"
+                value={formData.github}
+                onChange={(e) => handleInputChange('github', e.target.value)}
+                placeholder="https://github.com/you"
+              />
+          </div>
+
+          <button type="submit" className="join-submit" disabled={status === 'submitting'}>
+            {status === 'submitting' ? 'submitting…' : 'create pull request'}
+          </button>
+
+          {status === 'success' && (
+            <p className="join-success">
+              pull request created!{' '}
+              {pullRequestUrl && (
+                <a
+                  href={pullRequestUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="join-link"
+                >
+                  view pr
+                </a>
+              )}
+            </p>
+          )}
+          {status === 'error' && <p className="join-error">{message || 'something went wrong.'}</p>}
+          {status === 'idle' && <p className="join-hint">we will generate a branch and open a pr with your info.</p>}
+        </form>
+
+        <div className="join-page-footer">
+          <Link href="/" className="join-link">
+            back to home
+          </Link>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
-

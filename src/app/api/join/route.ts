@@ -1,161 +1,194 @@
-import { NextResponse } from "next/server";
-import { createJoinPR } from "@/lib/github-join-pr";
+import { NextResponse } from 'next/server';
+
+interface JoinPayload {
+  name: string;
+  uni?: string;
+  website?: string;
+  program?: string;
+  year?: string;
+  roles?: string[];
+  verticals?: string[];
+  majors?: string[];
+  minors?: string[];
+  clubs?: string[];
+  profilePic?: string;
+  connections?: string[];
+  email?: string;
+  instagram?: string;
+  twitter?: string;
+  linkedin?: string;
+  github?: string;
+}
+
+const OWNER = process.env.GITHUB_OWNER || 'anshhkrishna';
+const REPO = process.env.GITHUB_REPO || 'columbia.network';
+const TOKEN = process.env.GITHUB_TOKEN;
+
+const headers = {
+  Accept: 'application/vnd.github+json',
+  'User-Agent': 'columbia-network-join-form',
+  // GitHub accepts either `Bearer` or `token`; use a scheme that matches common token prefixes.
+  Authorization: TOKEN
+    ? TOKEN.startsWith('github_pat_')
+      ? `Bearer ${TOKEN}`
+      : `token ${TOKEN}`
+    : '',
+};
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '') || 'member';
+
+const tsString = (value: string) => JSON.stringify(value);
+
+const buildMemberEntry = (payload: JoinPayload, memberId: string) => {
+  const website = payload.website?.trim() || '';
+  const program = payload.program?.trim() || '';
+  const year = payload.year?.trim() || '';
+  const roles = (payload.roles || []).filter(Boolean);
+  const verticals = (payload.verticals || []).filter(Boolean);
+  const majors = (payload.majors || []).filter(Boolean);
+  const minors = (payload.minors || []).filter(Boolean);
+  const connections = (payload.connections || []).filter(Boolean);
+  const email = payload.email?.trim() || '';
+  const instagram = payload.instagram?.trim() || '';
+  const twitter = payload.twitter?.trim() || '';
+  const linkedin = payload.linkedin?.trim() || '';
+  const githubUrl = payload.github?.trim() || '';
+
+  // We can't reliably accept image uploads in this JSON endpoint, so default to the conventional path.
+  const profilePic = `/photos/${memberId}.jpg`;
+
+  const lines: string[] = [];
+  lines.push('  {');
+  lines.push(`    id: ${tsString(memberId)},`);
+  lines.push(`    name: ${tsString(payload.name.trim())},`);
+  lines.push(`    website: ${tsString(website)},`);
+  lines.push(`    program: ${tsString(program)},`);
+  lines.push(`    year: ${tsString(year)},`);
+  lines.push(`    roles: ${JSON.stringify(roles)},`);
+  lines.push(`    verticals: ${JSON.stringify(verticals)},`);
+  lines.push(`    majors: ${JSON.stringify(majors)},`);
+  lines.push(`    minors: ${JSON.stringify(minors)},`);
+  lines.push(`    profilePic: ${tsString(profilePic)},`);
+  lines.push(`    email: ${tsString(email)},`);
+  lines.push(`    instagram: ${tsString(instagram)},`);
+  lines.push(`    twitter: ${tsString(twitter)},`);
+  lines.push(`    linkedin: ${tsString(linkedin)},`);
+  lines.push(`    github: ${tsString(githubUrl)},`);
+  lines.push(`    connections: ${JSON.stringify(connections)},`);
+  lines.push('  },');
+  return { entry: lines.join('\n') + '\n\n', profilePic };
+};
+
+async function github(path: string, init?: RequestInit) {
+  const response = await fetch(`https://api.github.com${path}`, {
+    cache: 'no-store',
+    ...init,
+    headers: {
+      ...headers,
+      ...(init?.headers || {}),
+    },
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = data?.message || 'GitHub API error';
+    const status = response.status;
+    const docs = data?.documentation_url ? ` (${data.documentation_url})` : '';
+    throw new Error(`${message} [${status}] at ${path}${docs}`);
+  }
+  return data;
+}
 
 export async function POST(request: Request) {
-  const payload = await request.json().catch(() => null);
-
-  if (!payload || !payload.name) {
+  if (!TOKEN) {
     return NextResponse.json(
-      { ok: false, error: "Missing required fields" },
-      { status: 400 },
+      { error: 'Server is not configured with GITHUB_TOKEN.' },
+      { status: 500 },
     );
   }
 
-  const slug =
-    typeof payload.name === "string"
-      ? payload.name
-          .toLowerCase()
-          .trim()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "")
-      : "";
+  const body = (await request.json().catch(() => null)) as JoinPayload | null;
+  const programFromMajors = body?.majors?.filter(Boolean).join(' + ') || '';
+  const program = body?.program?.trim() || programFromMajors;
+  if (!body || !body.name || !body.uni || !body.email || !program || !body.year) {
+    return NextResponse.json(
+      { error: 'Name, UNI, email, major(s), and year are required.' },
+      { status: 400 },
+    );
+  }
+  const normalizedBody: JoinPayload = { ...body, program };
 
-  const memberSnippet = {
-    id: slug || "your-id-here",
-    name: payload.name,
-    website: payload.website || "",
-    program: payload.program || undefined,
-    roles: payload.roles && payload.roles.length ? payload.roles : undefined,
-    verticals:
-      payload.verticals && payload.verticals.length
-        ? payload.verticals
-        : undefined,
-    profilePic: payload.profilePic || undefined,
-    twitter: payload.twitter || undefined,
-    linkedin: payload.linkedin || undefined,
-    connections:
-      payload.connections && payload.connections.length
-        ? payload.connections
-        : undefined,
-  };
+  try {
+    const repo = await github(`/repos/${OWNER}/${REPO}`);
+    const defaultBranch: string = repo.default_branch || 'main';
 
-  // Logs a ready-to-paste snippet for src/data/members.ts
-  console.log("New join submission (raw)", payload);
-  console.log(
-    "Add this to members.ts:\n",
-    JSON.stringify(memberSnippet, null, 2),
-  );
-  if (payload.github || payload.notes) {
-    console.log("Extra context (github / notes):", {
-      github: payload.github,
-      notes: payload.notes,
+    const ref = await github(`/repos/${OWNER}/${REPO}/git/ref/heads/${defaultBranch}`);
+    const baseSha: string = ref.object?.sha;
+
+    const branchName = `submission/${slugify(normalizedBody.name)}-${Date.now()}`;
+
+    await github(`/repos/${OWNER}/${REPO}/git/refs`, {
+      method: 'POST',
+      body: JSON.stringify({
+        ref: `refs/heads/${branchName}`,
+        sha: baseSha,
+      }),
     });
-  }
 
-  // Auto-open a PR that adds this member to members.ts (optional).
-  const ghToken = process.env.JOIN_GITHUB_TOKEN || process.env.GITHUB_TOKEN;
-  const ghOwner = process.env.GITHUB_REPO_OWNER;
-  const ghRepo = process.env.GITHUB_REPO_NAME;
-  let prUrl: string | null = null;
-  if (ghToken && ghOwner && ghRepo) {
-    const result = await createJoinPR({
-      owner: ghOwner,
-      repo: ghRepo,
-      token: ghToken,
-      memberSnippet,
-      payload: {
-        name: payload.name,
-        notes: payload.notes,
-        github: payload.github,
-        profilePic: payload.profilePic,
-      },
+    const websiteText = normalizedBody.website || 'not provided';
+
+    // Edit members file directly (instead of creating a separate submission file).
+    const membersPath = 'src/data/members.ts';
+    const membersFile = await github(`/repos/${OWNER}/${REPO}/contents/${membersPath}?ref=${defaultBranch}`);
+    const decoded = Buffer.from(membersFile.content || '', 'base64').toString('utf8');
+
+    const baseId = slugify(normalizedBody.name);
+    const uniSuffix = normalizedBody.uni?.toLowerCase().trim();
+    const existingIds = new Set(
+      Array.from(decoded.matchAll(/id:\s*["']([^"']+)["']/g)).map((m) => m[1]),
+    );
+    const memberId =
+      !existingIds.has(baseId) ? baseId : uniSuffix ? `${baseId}-${slugify(uniSuffix)}` : `${baseId}-${Date.now()}`;
+
+    const marker = '// ADD YOUR ENTRY BELOW THIS LINE';
+    const markerIndex = decoded.indexOf(marker);
+    if (markerIndex === -1) {
+      throw new Error(`Unable to find insertion marker in ${membersPath}.`);
+    }
+    const insertAt = decoded.indexOf('\n', markerIndex);
+    const { entry, profilePic } = buildMemberEntry(normalizedBody, memberId);
+    const updated =
+      decoded.slice(0, insertAt + 1) + '\n' + entry + decoded.slice(insertAt + 1);
+
+    const updatedContent = Buffer.from(updated).toString('base64');
+    await github(`/repos/${OWNER}/${REPO}/contents/${membersPath}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        message: `chore: add ${normalizedBody.name} to members`,
+        content: updatedContent,
+        sha: membersFile.sha,
+        branch: branchName,
+      }),
     });
-    if (result.error) console.error("Auto-PR failed:", result.error);
-    else prUrl = result.prUrl;
+
+    const pr = await github(`/repos/${OWNER}/${REPO}/pulls`, {
+      method: 'POST',
+      body: JSON.stringify({
+        title: `Add ${normalizedBody.name} to the webring`,
+        head: branchName,
+        base: defaultBranch,
+        body: `Automated submission from the columbia.network form.\n\nName: ${normalizedBody.name}\nUNI: ${normalizedBody.uni}\nWebsite: ${websiteText}\n\nPhoto: please add your photo at public${profilePic}`,
+      }),
+    });
+
+    return NextResponse.json({ pullRequestUrl: pr.html_url });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unable to create pull request.';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  // Optionally forward to a webhook (Slack / email / Airtable / etc.)
-  // Set JOIN_WEBHOOK_URL in your environment to use this.
-  const webhookUrl = process.env.JOIN_WEBHOOK_URL;
-  if (webhookUrl) {
-    try {
-      await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "columbia-network.join-submission",
-          createdAt: new Date().toISOString(),
-          payload,
-          memberSnippet,
-        }),
-      });
-    } catch (err) {
-      console.error("Failed to send join submission to webhook", err);
-    }
-  }
-
-  // Optionally send you an email with the submission details.
-  // To enable, set RESEND_API_KEY (and optionally JOIN_NOTIFY_EMAIL) in your env.
-  const resendApiKey = process.env.RESEND_API_KEY;
-  const notifyEmail = process.env.JOIN_NOTIFY_EMAIL || "ak5578@columbia.edu";
-
-  if (resendApiKey) {
-    try {
-      const subject = `New columbia.network join request: ${memberSnippet.name}`;
-      const textBody = [
-        `New join submission for columbia.network`,
-        "",
-        `Name: ${payload.name}`,
-        `Website: ${payload.website || "(none)"}`,
-        `Program: ${payload.program || "(none)"}`,
-        `Roles: ${
-          Array.isArray(payload.roles) && payload.roles.length
-            ? payload.roles.join(", ")
-            : "(none)"
-        }`,
-        `Verticals: ${
-          Array.isArray(payload.verticals) && payload.verticals.length
-            ? payload.verticals.join(", ")
-            : "(none)"
-        }`,
-        `LinkedIn: ${payload.linkedin || "(none)"}`,
-        `Twitter: ${payload.twitter || "(none)"}`,
-        `GitHub: ${payload.github || "(none)"}`,
-        `Profile pic: ${payload.profilePic ? "[provided]" : "(none)"}`,
-        `Connections: ${
-          Array.isArray(payload.connections) && payload.connections.length
-            ? payload.connections.join(", ")
-            : "(none)"
-        }`,
-        "",
-        `Notes:`,
-        payload.notes || "(none)",
-        "",
-        `---`,
-        `Paste this snippet into src/data/members.ts:`,
-        JSON.stringify(memberSnippet, null, 2),
-        "",
-        `Sent automatically from columbia.network`,
-      ].join("\n");
-
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${resendApiKey}`,
-        },
-        body: JSON.stringify({
-          from: "columbia.network <onboarding@resend.dev>",
-          to: [notifyEmail],
-          subject,
-          text: textBody,
-        }),
-      });
-    } catch (err) {
-      console.error("Failed to send join submission email", err);
-    }
-  }
-
-  return NextResponse.json({ ok: true, memberSnippet, prUrl });
 }
-
