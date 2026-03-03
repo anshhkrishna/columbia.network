@@ -27,6 +27,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
     const [activeRoles, setActiveRoles] = useState<Set<string>>(new Set());
     const [activeVerticals, setActiveVerticals] = useState<Set<string>>(new Set());
     const [showFilters, setShowFilters] = useState(false);
+    const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
     useEffect(() => {
         setShuffledMembers(shuffleArray(members));
@@ -219,7 +220,11 @@ export default function SearchableContent({ members, connections }: SearchableCo
                     connections={connections}
                     highlightedMemberIds={filteredMembers.map(m => m.id)}
                     searchQuery={searchQuery}
-                    onNodeClick={(firstName) => setSearchQuery(firstName)}
+                    selectedMemberId={selectedMemberId}
+                    onNodeClick={(memberId, firstName) => {
+                        setSelectedMemberId(memberId);
+                        setSearchQuery(firstName);
+                    }}
                 />
             </div>
 

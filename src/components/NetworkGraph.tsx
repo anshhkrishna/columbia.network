@@ -20,7 +20,8 @@ interface NetworkGraphProps {
   connections: Connection[];
   highlightedMemberIds?: string[];
   searchQuery?: string;
-  onNodeClick?: (firstName: string) => void;
+  selectedMemberId?: string | null;
+  onNodeClick?: (memberId: string, firstName: string) => void;
 }
 
 interface SimNode extends SimulationNodeDatum {
@@ -40,6 +41,7 @@ export default function NetworkGraph({
   connections,
   highlightedMemberIds = [],
   searchQuery = "",
+  selectedMemberId = null,
   onNodeClick,
 }: NetworkGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -91,6 +93,9 @@ export default function NetworkGraph({
     connections.forEach((conn) => {
       const fromNode = nodes.find((n) => n.id === conn.fromId);
       const toNode = nodes.find((n) => n.id === conn.toId);
+      const isSelectedLink =
+        selectedMemberId &&
+        (conn.fromId === selectedMemberId || conn.toId === selectedMemberId);
 
       if (
         fromNode &&
@@ -117,9 +122,10 @@ export default function NetworkGraph({
         line.setAttribute("x2", x2.toString());
         line.setAttribute("y2", y2.toString());
         const accent = "#6cb4e4";
-        line.setAttribute("stroke", accent);
-        line.setAttribute("stroke-width", "2.2");
-        line.setAttribute("opacity", "0.8");
+        const highlight = "#ffffff";
+        line.setAttribute("stroke", isSelectedLink ? highlight : accent);
+        line.setAttribute("stroke-width", isSelectedLink ? "3" : "2");
+        line.setAttribute("opacity", isSelectedLink ? "1" : "0.35");
         svg.appendChild(line);
       }
     });
@@ -141,6 +147,15 @@ export default function NetworkGraph({
           const isHighlighted =
             highlightedMemberIds.length === 0 ||
             highlightedMemberIds.includes(node.id);
+          const isSelected = selectedMemberId === node.id;
+          const isNeighbor =
+            !!selectedMemberId &&
+            connections.some(
+              (c) =>
+                (c.fromId === selectedMemberId && c.toId === node.id) ||
+                (c.toId === selectedMemberId && c.fromId === node.id)
+            );
+
           if (searchQuery && isHighlighted) {
             avatarChild.style.opacity = "1";
           } else if (searchQuery && !isHighlighted) {
@@ -148,10 +163,19 @@ export default function NetworkGraph({
           } else {
             avatarChild.style.opacity = "1";
           }
+
+          if (isSelected || isNeighbor) {
+            avatarChild.style.boxShadow = "0 0 0 3px rgba(255,255,255,0.8)";
+            avatarChild.style.border = "2px solid #ffffff";
+            avatarChild.style.filter = "none";
+          } else {
+            avatarChild.style.boxShadow = "none";
+            avatarChild.style.border = "none";
+          }
         }
       }
     });
-  }, [connections, isDark, highlightedMemberIds, searchQuery]);
+  }, [connections, isDark, highlightedMemberIds, searchQuery, selectedMemberId]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -402,14 +426,15 @@ export default function NetworkGraph({
       nodeDiv.addEventListener("click", (e) => {
         const wasDragging = (nodeDiv as any).__isDragging === true;
         if (!wasDragging && !isDraggingRef.current) {
+          if (onNodeClick && node.name) {
+            const firstName = node.name.split(" ")[0].toLowerCase();
+            onNodeClick(node.id, firstName);
+          }
           if (node.website) {
             const url = node.website.startsWith("http")
               ? node.website
               : `https://${node.website}`;
             window.open(url, "_blank");
-          } else if (onNodeClick && node.name) {
-            const firstName = node.name.split(" ")[0].toLowerCase();
-            onNodeClick(firstName);
           }
         }
         (nodeDiv as any).__isDragging = false;
