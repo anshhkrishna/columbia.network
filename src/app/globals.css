@@ -83,6 +83,7 @@ a {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   padding: 4rem;
   gap: 4rem;
   position: relative;
@@ -128,10 +129,67 @@ a {
 .network-graph-container {
   border-radius: 8px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(20, 26, 36, 0.8), rgba(12, 16, 24, 0.8));
+  background: linear-gradient(135deg, rgba(20, 26, 36, 0.78), rgba(12, 16, 24, 0.78));
   border: 1px solid rgba(108, 180, 228, 0.35);
   position: relative;
   min-height: 1100px;
+}
+
+.network-graph-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  opacity: 0.1;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.network-graph-inner {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.network-graph-ascii {
+  position: absolute;
+  top: 44%;
+  left: 51%;
+  transform: translate(-50%, -50%) scale(0.78);
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.22;
+  filter: drop-shadow(0 10px 26px rgba(0, 26, 87, 0.28));
+}
+
+.network-graph-ascii pre {
+  margin: 0;
+  white-space: pre;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  font-size: 10px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: #6cb4e4;
+  text-shadow: 0 0 16px rgba(108, 180, 228, 0.22);
+}
+
+.site-footer {
+  flex-basis: 100%;
+  margin-top: -2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(108, 180, 228, 0.18);
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-geist-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
 }
 
 /* Header Section */
@@ -831,17 +889,17 @@ a {
 
 /* ASCII Background */
 .ascii-art-background {
-  position: fixed;
-  top: 35%;
-  left: 74%;
+  /* Default (webring page): center within the page layout, not the viewport. */
+  position: absolute;
+  top: 50%;
+  left: 50%;
   z-index: 0;
   pointer-events: none;
   user-select: none;
   opacity: 0.38;
   overflow: hidden;
-  transform: translate(-50%, -20%);
+  transform: translate(-50%, -50%);
   filter: drop-shadow(0 8px 18px rgba(0, 26, 87, 0.25));
-  will-change: transform;
 }
 
 [data-theme='dark'] .ascii-art-background {
@@ -898,7 +956,10 @@ a {
   }
   
   .ascii-art-background {
-    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.35);
+    opacity: 0.12;
   }
 
 }

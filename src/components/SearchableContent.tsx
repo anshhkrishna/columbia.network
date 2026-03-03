@@ -4,7 +4,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Member, Connection, ROLE_OPTIONS, VERTICAL_OPTIONS } from '@/data/members';
 import MembersTable from './MembersTable';
 import NetworkGraph from './NetworkGraph';
-import AsciiBackground from './AsciiBackground';
 import { Search, ChevronDown, ChevronUp, X } from 'lucide-react';
 
 function shuffleArray<T>(array: T[]): T[] {
@@ -233,7 +232,9 @@ export default function SearchableContent({ members, connections }: SearchableCo
                 />
             </div>
 
-            <AsciiBackground />
+            <footer className="site-footer">
+                created by Armaan Agrawal and Ansh Krishna
+            </footer>
         </main>
     );
 }
