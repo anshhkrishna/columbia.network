@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Member, Connection, ROLE_OPTIONS, VERTICAL_OPTIONS } from '@/data/members';
 import MembersTable from './MembersTable';
 import NetworkGraph from './NetworkGraph';
+import { COLUMBIA_ASCII_LOGO } from '@/data/asciiLogo';
 import { Search, ChevronDown, ChevronUp, X } from 'lucide-react';
 
 function shuffleArray<T>(array: T[]): T[] {
@@ -128,6 +129,9 @@ export default function SearchableContent({ members, connections }: SearchableCo
             </div>
 
             <div className="graph-section">
+                <div className="graph-watermark" aria-hidden="true">
+                    <pre>{COLUMBIA_ASCII_LOGO}</pre>
+                </div>
                 <div className="search-wrapper">
                     <div className="search-bar-container">
                         <Search size={18} />
