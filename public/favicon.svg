@@ -1,24 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="columbia ascii crown">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#001a57"/>
-      <stop offset="100%" stop-color="#000c24"/>
-    </linearGradient>
-  </defs>
-  <rect x="2" y="2" width="60" height="60" rx="12" fill="url(#bg)"/>
-  <text x="6" y="12" xml:space="preserve" font-family="Courier New, monospace" font-size="4" font-weight="800" fill="#80c2ff" letter-spacing="-0.12" style="white-space: pre;">
-{`      :%%%%
-   %%%%%%%%%%
-  %%%%%%%%%%%%
-     .%%%%
-     %%%%.
-   %%%%%%%%%:
- .%%%%%%%%%%%*
-#%%%%%%%%%%%%.
-%%%%%%%%%%%%%.
-    #%%%%
-    #%%%%
-    #%%%%`}
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="cu.n">
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="#000000"/>
+  <text x="14" y="40" font-family="Roboto, Arial, sans-serif" font-size="24" font-weight="800" letter-spacing="-0.5">
+    <tspan fill="#6cb4e4">cu</tspan><tspan fill="#ffffff">.n</tspan>
   </text>
 </svg>

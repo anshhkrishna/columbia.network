@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import AsciiBackground from '@/components/AsciiBackground';
+import { ROLE_OPTIONS, VERTICAL_OPTIONS } from '@/data/members';
 
 type JoinPayload = {
   name: string;
@@ -20,6 +21,23 @@ type JoinPayload = {
   linkedin?: string;
 };
 
+type JoinFormData = {
+  name: string;
+  uni: string;
+  website: string;
+  program: string;
+  year: string;
+  roles: string[];
+  verticals: string[];
+  clubs: string;
+  profilePic: string;
+  profileFile: File | null;
+  connections: string;
+  instagram: string;
+  twitter: string;
+  linkedin: string;
+};
+
 const parseList = (value: string) =>
   value
     .split(',')
@@ -27,14 +45,14 @@ const parseList = (value: string) =>
     .filter(Boolean);
 
 export default function JoinPage() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<JoinFormData>({
     name: '',
     uni: '',
     website: '',
     program: '',
     year: '',
-    roles: '',
-    verticals: '',
+    roles: [],
+    verticals: [],
     clubs: '',
     profilePic: '/photos/your-name.jpg',
     profileFile: null as File | null,
@@ -78,8 +96,16 @@ export default function JoinPage() {
     return `https://github.com/anshhkrishna/columbia.network/issues/new?${params.toString()}`;
   }, []);
 
-  const handleInputChange = (field: keyof typeof formData, value: string | File | null) => {
-    setFormData((prev) => ({ ...prev, [field]: value as any }));
+  const handleInputChange = <K extends keyof JoinFormData>(field: K, value: JoinFormData[K]) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const toggleTag = (field: 'roles' | 'verticals', tag: string) => {
+    setFormData((prev) => {
+      const current = prev[field];
+      const next = current.includes(tag) ? current.filter((t) => t !== tag) : [...current, tag];
+      return { ...prev, [field]: next };
+    });
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -100,8 +126,8 @@ export default function JoinPage() {
       website: formData.website.trim() || undefined,
       program: formData.program.trim(),
       year: formData.year.trim(),
-      roles: parseList(formData.roles),
-      verticals: parseList(formData.verticals),
+      roles: formData.roles.length ? formData.roles : undefined,
+      verticals: formData.verticals.length ? formData.verticals : undefined,
       clubs: parseList(formData.clubs),
       profilePic: formData.profilePic.trim() || undefined,
       connections: parseList(formData.connections),
@@ -134,10 +160,11 @@ export default function JoinPage() {
         website: '',
         program: '',
         year: '',
-        roles: '',
-        verticals: '',
+        roles: [],
+        verticals: [],
         clubs: '',
         profilePic: '/photos/your-name.jpg',
+        profileFile: null,
         connections: '',
         instagram: '',
         twitter: '',
@@ -196,7 +223,6 @@ export default function JoinPage() {
               value={formData.website}
               onChange={(e) => handleInputChange('website', e.target.value)}
               placeholder="https://yourwebsite.com"
-              required
             />
           </div>
 
@@ -223,23 +249,37 @@ export default function JoinPage() {
           </div>
 
           <div className="join-row">
-            <label>roles (comma separated)</label>
-            <input
-              type="text"
-              value={formData.roles}
-              onChange={(e) => handleInputChange('roles', e.target.value)}
-              placeholder="engineering, design"
-            />
+            <label>roles</label>
+            <div className="filter-tags join-tags">
+              {ROLE_OPTIONS.map((role) => (
+                <button
+                  key={role}
+                  type="button"
+                  className={`filter-tag ${formData.roles.includes(role) ? 'filter-tag-active' : ''}`}
+                  onClick={() => toggleTag('roles', role)}
+                  aria-pressed={formData.roles.includes(role)}
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="join-row">
-            <label>verticals (comma separated)</label>
-            <input
-              type="text"
-              value={formData.verticals}
-              onChange={(e) => handleInputChange('verticals', e.target.value)}
-              placeholder="ai, fintech"
-            />
+            <label>verticals</label>
+            <div className="filter-tags join-tags">
+              {VERTICAL_OPTIONS.map((vertical) => (
+                <button
+                  key={vertical}
+                  type="button"
+                  className={`filter-tag ${formData.verticals.includes(vertical) ? 'filter-tag-active' : ''}`}
+                  onClick={() => toggleTag('verticals', vertical)}
+                  aria-pressed={formData.verticals.includes(vertical)}
+                >
+                  {vertical}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="join-row">

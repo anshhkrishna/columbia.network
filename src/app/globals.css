@@ -798,7 +798,7 @@ a {
 }
 
 .join-row label {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--secondary);
 }
 
@@ -809,6 +809,7 @@ a {
   padding: 0.7rem 0.8rem;
   border-radius: 8px;
   font-family: 'Roboto', sans-serif;
+  font-size: 1.05rem;
 }
 
 .join-row input[type='file'] {
@@ -819,6 +820,16 @@ a {
 
 .join-row input::placeholder {
   color: #6b7280;
+}
+
+.join-tags {
+  gap: 0.5rem;
+}
+
+.join-tags .filter-tag {
+  font-size: 0.95rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
 }
 
 .join-grid {
@@ -839,6 +850,7 @@ a {
   transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.2s ease;
   width: 100%;
   display: block;
+  font-size: 1.05rem;
 }
 
 .join-submit:hover {
@@ -867,7 +879,7 @@ a {
 .join-hint,
 .join-fallback {
   color: var(--secondary);
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .join-page-footer {

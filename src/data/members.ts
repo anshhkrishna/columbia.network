@@ -10,7 +10,9 @@
  * Required fields:
  * - id: Your name with hyphens (e.g., "john-doe")
  * - name: Your full name
- * - website: Your personal website URL (required to be part of the webring!)
+ *
+ * Recommended:
+ * - website: Your personal website URL (optional but encouraged)
  * 
  * Optional fields:
  * - program: Your major/program at Columbia

@@ -36,6 +36,10 @@ interface SimLink extends SimulationLinkDatum<SimNode> {
   target: string | SimNode;
 }
 
+type NodeDiv = HTMLDivElement & {
+  __isDragging?: boolean;
+};
+
 export default function NetworkGraph({
   members,
   connections,
@@ -47,7 +51,7 @@ export default function NetworkGraph({
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const nodesRef = useRef<SimNode[]>([]);
-  const nodeElementsRef = useRef<Map<string, HTMLElement>>(new Map());
+  const nodeElementsRef = useRef<Map<string, NodeDiv>>(new Map());
   const simulationRef = useRef<Simulation<SimNode, SimLink> | null>(null);
   const dragNodeRef = useRef<string | null>(null);
   const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -58,7 +62,6 @@ export default function NetworkGraph({
   const [isDark, setIsDark] = useState(false);
   const zoomLevelRef = useRef(1);
   const panOffsetRef = useRef({ x: 0, y: 0 });
-  const [, forceRender] = useState(0);
   const dimensionsRef = useRef({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -175,7 +178,7 @@ export default function NetworkGraph({
         }
       }
     });
-  }, [connections, isDark, highlightedMemberIds, searchQuery, selectedMemberId]);
+  }, [connections, highlightedMemberIds, searchQuery, selectedMemberId]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -200,13 +203,11 @@ export default function NetworkGraph({
 
         panOffsetRef.current = { x: offsetX, y: offsetY };
         updateVisuals();
-        forceRender((c) => c + 1);
       }
     } else if (!searchQuery) {
       zoomLevelRef.current = 1;
       panOffsetRef.current = { x: 0, y: 0 };
       updateVisuals();
-      forceRender((c) => c + 1);
     }
   }, [searchQuery, highlightedMemberIds, updateVisuals]);
 
@@ -299,7 +300,7 @@ export default function NetworkGraph({
 
     // Create DOM nodes
     nodesRef.current.forEach((node) => {
-      const nodeDiv = document.createElement("div");
+      const nodeDiv = document.createElement("div") as NodeDiv;
       nodeDiv.style.position = "absolute";
       nodeDiv.style.cursor = "grab";
       nodeDiv.style.userSelect = "none";
@@ -396,7 +397,7 @@ export default function NetworkGraph({
       });
 
       nodeDiv.addEventListener("mousedown", (e) => {
-        (nodeDiv as any).__isDragging = false;
+        nodeDiv.__isDragging = false;
         dragStartRef.current = { x: e.clientX, y: e.clientY };
         isDraggingRef.current = false;
         dragNodeRef.current = node.id;
@@ -423,8 +424,8 @@ export default function NetworkGraph({
         simulation.alpha(physics.dragAlpha).restart();
       });
 
-      nodeDiv.addEventListener("click", (e) => {
-        const wasDragging = (nodeDiv as any).__isDragging === true;
+      nodeDiv.addEventListener("click", () => {
+        const wasDragging = nodeDiv.__isDragging === true;
         if (!wasDragging && !isDraggingRef.current) {
           if (onNodeClick && node.name) {
             const firstName = node.name.split(" ")[0].toLowerCase();
@@ -437,7 +438,7 @@ export default function NetworkGraph({
             window.open(url, "_blank");
           }
         }
-        (nodeDiv as any).__isDragging = false;
+        nodeDiv.__isDragging = false;
       });
 
       nodeDiv.appendChild(avatarEl);
@@ -466,7 +467,7 @@ export default function NetworkGraph({
           isDraggingRef.current = true;
           const nodeDiv = nodeElementsRef.current.get(dragNodeRef.current);
           if (nodeDiv) {
-            (nodeDiv as any).__isDragging = true;
+            nodeDiv.__isDragging = true;
           }
         }
 
@@ -549,7 +550,6 @@ export default function NetworkGraph({
       panOffsetRef.current = { x: newPanX, y: newPanY };
 
       updateVisuals();
-      forceRender((c) => c + 1);
     };
 
     container.addEventListener("wheel", handleWheel, { passive: false });
