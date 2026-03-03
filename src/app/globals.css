@@ -128,7 +128,9 @@ a {
 .network-graph-container {
   border-radius: 8px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(20, 26, 36, 0.8), rgba(12, 16, 24, 0.8));
+  background:
+    url('/ascii-mark.svg') 56% 52% / 720px no-repeat,
+    linear-gradient(135deg, rgba(20, 26, 36, 0.78), rgba(12, 16, 24, 0.78));
   border: 1px solid rgba(108, 180, 228, 0.35);
   position: relative;
   min-height: 1100px;
