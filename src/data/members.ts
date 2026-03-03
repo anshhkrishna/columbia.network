@@ -48,7 +48,6 @@ export interface Member {
   majors?: string[];
   roles?: string[];
   verticals?: string[];
-  majors?: string[];
   minors?: string[];
   profilePic?: string;
   email?: string;
