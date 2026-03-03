@@ -66,6 +66,18 @@ export interface Connection {
 export const members: Member[] = [
   // ============================================
   // ADD YOUR ENTRY BELOW THIS LINE
+
+  {
+    id: "api-test",
+    name: "API Test",
+    program: "CS",
+    year: "2027",
+    roles: ["engineering"],
+    verticals: ["ai"],
+    profilePic: "/photos/api-test.jpg",
+    connections: ["ansh-krishna"],
+  },
+
   // ============================================
 
   // Example entry (copy this as a template):
