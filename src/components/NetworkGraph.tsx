@@ -127,11 +127,9 @@ export default function NetworkGraph({
         line.setAttribute("y1", y1.toString());
         line.setAttribute("x2", x2.toString());
         line.setAttribute("y2", y2.toString());
-        const accent = "#6cb4e4";
-        const highlight = "#ffffff";
-        line.setAttribute("stroke", isSelectedLink ? highlight : accent);
-        line.setAttribute("stroke-width", isSelectedLink ? "3" : "2");
-        line.setAttribute("opacity", isSelectedLink ? "1" : "0.35");
+        line.setAttribute("stroke", isSelectedLink ? "#ffffff" : "#555555");
+        line.setAttribute("stroke-width", isSelectedLink ? "2" : "1");
+        line.setAttribute("opacity", isSelectedLink ? "0.8" : "0.2");
         svg.appendChild(line);
       }
     });
@@ -171,13 +169,11 @@ export default function NetworkGraph({
           }
 
           if (isSelected) {
-            avatarChild.style.boxShadow = "0 0 0 3px rgba(108,180,228,0.85)";
-            avatarChild.style.border = "2px solid #6cb4e4";
-            avatarChild.style.filter = "none";
+            avatarChild.style.boxShadow = "0 0 0 2px rgba(255,255,255,0.6)";
+            avatarChild.style.border = "none";
           } else if (isNeighbor) {
-            avatarChild.style.boxShadow = "0 0 0 3px rgba(108,180,228,0.55)";
-            avatarChild.style.border = "2px solid rgba(108,180,228,0.9)";
-            avatarChild.style.filter = "none";
+            avatarChild.style.boxShadow = "0 0 0 2px rgba(255,255,255,0.3)";
+            avatarChild.style.border = "none";
           } else {
             avatarChild.style.boxShadow = "none";
             avatarChild.style.border = "none";
@@ -379,9 +375,6 @@ export default function NetworkGraph({
         avatarEl.style.opacity = "1";
         avatarEl.style.transform = "scale(1.15)";
         nameLabel.style.opacity = "1";
-        nameLabel.style.background = "rgba(12,16,24,0.85)";
-        nameLabel.style.border = "1px solid #6cb4e4";
-        nameLabel.style.color = "#6cb4e4";
       });
 
       nodeDiv.addEventListener("mouseleave", () => {
@@ -399,11 +392,6 @@ export default function NetworkGraph({
         }
         avatarEl.style.transform = "scale(1)";
         nameLabel.style.opacity = "0";
-        nameLabel.style.background = isDark
-          ? "rgba(0, 0, 0, 0.8)"
-          : "rgba(255, 255, 255, 0.9)";
-        nameLabel.style.border = "none";
-        nameLabel.style.color = isDark ? "#fff" : "#000";
       });
 
       nodeDiv.addEventListener("mousedown", (e) => {
@@ -589,7 +577,7 @@ export default function NetworkGraph({
       className="network-graph-container"
       style={{
         width: "100%",
-        height: "400px",
+        height: "450px",
       }}
     >
       <div className="network-graph-ascii" aria-hidden="true">

@@ -75,8 +75,10 @@ a {
   }
 
   .graph-section {
-    flex: 0.85;
-    max-width: 520px;
+    flex: 0.7;
+    max-width: 440px;
+    position: sticky;
+    top: 2rem;
   }
 }
 
@@ -101,9 +103,9 @@ a {
 }
 
 .network-graph-container {
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  background: var(--input-bg);
+  background: var(--background);
   border: 1px solid var(--border);
   position: relative;
 }
