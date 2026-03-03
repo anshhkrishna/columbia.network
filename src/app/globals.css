@@ -142,7 +142,7 @@ a {
 .network-graph-ascii {
   position: absolute;
   top: 44%;
-  left: 55%;
+  left: 52%;
   transform: translate(-50%, -50%) scale(0.78);
   z-index: 0;
   pointer-events: none;
