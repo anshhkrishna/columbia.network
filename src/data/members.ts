@@ -45,6 +45,7 @@ export interface Member {
   website?: string;
   program?: string;
   year?: string;
+  majors?: string[];
   roles?: string[];
   verticals?: string[];
   majors?: string[];

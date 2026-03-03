@@ -323,7 +323,7 @@ export default function NetworkGraph({
         img.style.height = "40px";
         img.style.borderRadius = "50%";
         img.style.objectFit = "cover";
-        img.style.filter = "none";
+        img.style.filter = "grayscale(100%)";
         img.style.display = "block";
         img.draggable = false;
         img.style.transition = "filter 0.3s ease, opacity 0.3s ease";
@@ -385,6 +385,8 @@ export default function NetworkGraph({
       });
 
       nodeDiv.addEventListener("mouseleave", () => {
+        if (avatarEl instanceof HTMLImageElement)
+          avatarEl.style.filter = "grayscale(100%)";
         const isHighlighted =
           highlightedMemberIds.length === 0 ||
           highlightedMemberIds.includes(node.id);
