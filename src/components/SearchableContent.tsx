@@ -128,12 +128,6 @@ export default function SearchableContent({ members, connections }: SearchableCo
             </div>
 
             <div className="graph-section">
-                <img
-                    src="/watermark.png"
-                    alt=""
-                    aria-hidden="true"
-                    className="graph-watermark"
-                />
                 <div className="search-wrapper">
                     <div className="search-bar-container">
                         <Search size={18} />
@@ -219,6 +213,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
                 />
             </div>
 
+        <AsciiBackground />
         </main>
     );
 }

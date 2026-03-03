@@ -802,14 +802,14 @@ a {
 /* ASCII Background */
 .ascii-art-background {
   position: fixed;
-  top: 6%;
+  top: 50%;
   right: -10%;
   z-index: 0;
   pointer-events: none;
   user-select: none;
   opacity: 0.18;
   overflow: hidden;
-  transform: scale(1.1);
+  transform: translateY(-50%) scale(1.1);
   transform-origin: center right;
 }
 
@@ -817,9 +817,10 @@ a {
   opacity: 0.28;
 }
 
-.ascii-art-background pre {
+.ascii-art-background img {
   font-family: 'Courier New', Courier, monospace;
-  font-size: 8px;
+  height: 70vh;
+  width: auto;
   line-height: normal;
   margin: 0;
   padding: 0;
