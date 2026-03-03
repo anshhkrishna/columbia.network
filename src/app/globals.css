@@ -129,7 +129,7 @@ a {
   border-radius: 8px;
   overflow: hidden;
   background:
-    url('/ascii-mark.svg') 56% 52% / 720px no-repeat,
+    url('/ascii-logo.svg') 92% 54% / 1100px no-repeat,
     linear-gradient(135deg, rgba(20, 26, 36, 0.78), rgba(12, 16, 24, 0.78));
   border: 1px solid rgba(108, 180, 228, 0.35);
   position: relative;
