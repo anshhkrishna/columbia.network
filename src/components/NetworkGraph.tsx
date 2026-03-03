@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Member, Connection } from "@/data/members";
+import { COLUMBIA_ASCII_LOGO } from "@/data/asciiLogo";
 import {
   forceSimulation,
   forceLink,
@@ -50,6 +51,7 @@ export default function NetworkGraph({
   onNodeClick,
 }: NetworkGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const nodesRef = useRef<SimNode[]>([]);
   const nodeElementsRef = useRef<Map<string, NodeDiv>>(new Map());
@@ -85,7 +87,7 @@ export default function NetworkGraph({
   const updateVisuals = useCallback(() => {
     const svg = svgRef.current;
     const nodes = nodesRef.current;
-    const container = containerRef.current;
+    const container = innerRef.current;
 
     if (!svg || !container) return;
 
@@ -186,7 +188,7 @@ export default function NetworkGraph({
   }, [connections, highlightedMemberIds, searchQuery, selectedMemberId]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!innerRef.current) return;
 
     const { width, height } = dimensionsRef.current;
 
@@ -217,9 +219,9 @@ export default function NetworkGraph({
   }, [searchQuery, highlightedMemberIds, updateVisuals]);
 
   useEffect(() => {
-    if (!containerRef.current || members.length === 0) return;
+    if (!innerRef.current || members.length === 0) return;
 
-    const container = containerRef.current;
+    const container = innerRef.current;
     const width = container.clientWidth;
     const height = container.clientHeight;
     dimensionsRef.current = { width, height };
@@ -587,6 +589,11 @@ export default function NetworkGraph({
         width: "100%",
         height: "400px",
       }}
-    />
+    >
+      <div className="network-graph-ascii" aria-hidden="true">
+        <pre>{COLUMBIA_ASCII_LOGO}</pre>
+      </div>
+      <div ref={innerRef} className="network-graph-inner" />
+    </div>
   );
 }

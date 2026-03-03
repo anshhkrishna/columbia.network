@@ -128,12 +128,40 @@ a {
 .network-graph-container {
   border-radius: 8px;
   overflow: hidden;
-  background:
-    url('/ascii-logo.svg') 66% 52% / 900px no-repeat,
-    linear-gradient(135deg, rgba(20, 26, 36, 0.78), rgba(12, 16, 24, 0.78));
+  background: linear-gradient(135deg, rgba(20, 26, 36, 0.78), rgba(12, 16, 24, 0.78));
   border: 1px solid rgba(108, 180, 228, 0.35);
   position: relative;
   min-height: 1100px;
+}
+
+.network-graph-inner {
+  position: absolute;
+  inset: 0;
+}
+
+.network-graph-ascii {
+  position: absolute;
+  top: 50%;
+  left: 62%;
+  transform: translate(-50%, -50%) scale(0.78);
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.22;
+  filter: drop-shadow(0 10px 26px rgba(0, 26, 87, 0.28));
+}
+
+.network-graph-ascii pre {
+  margin: 0;
+  white-space: pre;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  font-size: 10px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: #6cb4e4;
+  text-shadow: 0 0 16px rgba(108, 180, 228, 0.22);
 }
 
 /* Header Section */
