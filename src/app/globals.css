@@ -570,6 +570,7 @@ a {
   overflow: hidden;
   transform: translate(-50%, -20%);
   filter: drop-shadow(0 8px 18px rgba(0, 26, 87, 0.25));
+  will-change: transform;
 }
 
 [data-theme='dark'] .ascii-art-background {
@@ -744,6 +745,7 @@ a {
 }
 
 .join-page .ascii-art-background {
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(1.05);

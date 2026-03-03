@@ -190,7 +190,7 @@ export default function JoinPage() {
           </div>
 
           <div className="join-row">
-            <label>website*</label>
+            <label>website</label>
             <input
               type="url"
               value={formData.website}
