@@ -129,7 +129,7 @@ a {
   border-radius: 8px;
   overflow: hidden;
   background:
-    url('/ascii-logo.svg') 92% 54% / 1100px no-repeat,
+    url('/ascii-logo.svg') 50% 50% / 1200px no-repeat,
     linear-gradient(135deg, rgba(20, 26, 36, 0.78), rgba(12, 16, 24, 0.78));
   border: 1px solid rgba(108, 180, 228, 0.35);
   position: relative;
@@ -604,17 +604,17 @@ a {
 
 /* ASCII Background */
 .ascii-art-background {
-  position: fixed;
-  top: 35%;
-  left: 74%;
+  /* Default (webring page): center within the page layout, not the viewport. */
+  position: absolute;
+  top: 50%;
+  left: 50%;
   z-index: 0;
   pointer-events: none;
   user-select: none;
   opacity: 0.38;
   overflow: hidden;
-  transform: translate(-50%, -20%);
+  transform: translate(-50%, -50%);
   filter: drop-shadow(0 8px 18px rgba(0, 26, 87, 0.25));
-  will-change: transform;
 }
 
 [data-theme='dark'] .ascii-art-background {
@@ -671,8 +671,8 @@ a {
   }
   
   .ascii-art-background {
-    top: 55%;
-    left: 72%;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%) scale(1.35);
     opacity: 0.12;
   }
