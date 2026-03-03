@@ -129,7 +129,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
 
             <div className="graph-section">
                 <img
-                    src="/crest.png"
+                    src="/watermark.png"
                     alt=""
                     aria-hidden="true"
                     className="graph-watermark"
