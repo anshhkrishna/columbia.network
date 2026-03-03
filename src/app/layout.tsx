@@ -14,6 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://columbia.network",
+  ),
   title: "columbia.network",
   description: "A webring for Columbia University students",
   icons: {
