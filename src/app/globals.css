@@ -352,7 +352,47 @@ a {
 .join-success {
   margin-top: 0.5rem;
   font-size: 0.85rem;
-  color: var(--hover-color);
+  color: var(--secondary);
+}
+
+.join-snippet {
+  margin-top: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  background: var(--input-bg);
+}
+
+.join-snippet-label {
+  font-size: 0.75rem;
+  color: var(--secondary);
+  margin-bottom: 0.4rem;
+}
+
+.join-snippet-code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  white-space: pre;
+  overflow-x: auto;
+  margin: 0 0 0.5rem 0;
+}
+
+.join-snippet-copy {
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+  font-size: 0.8rem;
+  font-family: 'Roboto', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.join-snippet-copy:hover {
+  border-color: #001a57;
+  background: var(--hover-bg);
 }
 
 @media (max-width: 900px) {

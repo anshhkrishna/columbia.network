@@ -24,6 +24,8 @@ export default function JoinPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const [memberSnippet, setMemberSnippet] = useState<string | null>(null);
+  const [prUrl, setPrUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const toggleMultiSelect = (
@@ -48,6 +50,7 @@ export default function JoinPage() {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
+    setPrUrl(null);
 
     try {
       const payload = {
@@ -71,6 +74,41 @@ export default function JoinPage() {
       if (!res.ok) {
         throw new Error("Request failed");
       }
+
+      const data = (await res.json()) as { memberSnippet?: unknown; prUrl?: string | null };
+      if (data.prUrl) setPrUrl(data.prUrl);
+
+      const slug =
+        typeof payload.name === "string"
+          ? payload.name
+              .toLowerCase()
+              .trim()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, "")
+          : "";
+
+      const snippetObject = {
+        id: slug || "your-id-here",
+        name: payload.name,
+        website: payload.website || "",
+        program: payload.program || undefined,
+        roles:
+          payload.roles && payload.roles.length ? payload.roles : undefined,
+        verticals:
+          payload.verticals && payload.verticals.length
+            ? payload.verticals
+            : undefined,
+        profilePic: payload.profilePic || undefined,
+        twitter: payload.twitter || undefined,
+        linkedin: payload.linkedin || undefined,
+        connections:
+          payload.connections && payload.connections.length
+            ? payload.connections
+            : undefined,
+      };
+
+      const snippetString = JSON.stringify(snippetObject, null, 2);
+      setMemberSnippet(snippetString);
 
       setSubmitted(true);
       setForm(INITIAL_FORM);
@@ -319,9 +357,42 @@ export default function JoinPage() {
 
             {error && <p className="join-error">{error}</p>}
             {submitted && !error && (
-              <p className="join-success">
-                thanks for submitting. we&apos;ll review and get back to you.
-              </p>
+              <>
+                <p className="join-success">
+                  thanks for submitting. we&apos;ll review and get back to you.
+                </p>
+                {prUrl && (
+                  <p className="join-success">
+                    we opened a pull request for you.{" "}
+                    <a
+                      href={prUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="join-link"
+                    >
+                      view PR
+                    </a>
+                  </p>
+                )}
+              </>
+            )}
+
+            {memberSnippet && !error && !prUrl && (
+              <div className="join-snippet">
+                <p className="join-snippet-label">
+                  copy this into <code>members.ts</code>:
+                </p>
+                <pre className="join-snippet-code">
+{memberSnippet}
+                </pre>
+                <button
+                  type="button"
+                  className="join-snippet-copy"
+                  onClick={() => navigator.clipboard.writeText(memberSnippet)}
+                >
+                  copy snippet
+                </button>
+              </div>
             )}
 
             <button

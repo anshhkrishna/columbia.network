@@ -85,6 +85,27 @@ export const members: Member[] = [
   // },
 
   {
+    id: "ethan-rhee",
+    name: "Ethan Rhee",
+    program: "Econ + CS",
+    roles: ["vc"],
+    profilePic: "/photos/ethan-rhee.png",
+    linkedin: "https://www.linkedin.com/in/ethan-rhee/",
+    twitter: "https://x.com/rheeethann",
+    connections: ["sid-rout", "ravin-chutijirawong", "naythan-chan", "justine-mach", "justin-hou", "abhiram-nandiraju", "rahul-arora", "ansh-krishna", "aedin-pereira", "ella-sy", "tanush-sawhney", "arm-komolhiran"],
+  },
+  {
+    id: "abhiram-nandiraju",
+    name: "Abhiram Nandiraju",
+    program: "CS",
+    roles: ["product", "vc"],
+    verticals: ["consumer", "saas"],
+    profilePic: "/photos/abhiram-nandiraju.png",
+    linkedin: "https://www.linkedin.com/in/abhinandiraju/",
+    twitter: "https://x.com/abhiramn34",
+    connections: ["justine-mach", "justin-hou", "alex-jerpelea", "rahul-arora", "ella-sy", "ansh-krishna", "ravin-chutijirawong", "arm-komolhiran", "armaan-agrawal", "sid-rout"],
+  },
+  {
     id: "ansh-krishna",
     name: "Ansh Krishna",
     website: "https://anshkrishna.com",
