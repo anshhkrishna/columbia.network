@@ -66,6 +66,15 @@ export interface Connection {
 export const members: Member[] = [
   // ============================================
   // ADD YOUR ENTRY BELOW THIS LINE
+
+  {
+    id: "armaan-agrawal-aa5851",
+    name: "Armaan Agrawal",
+    program: "CS",
+    year: "2029",
+    profilePic: "/photos/armaan-agrawal-aa5851.jpg",
+  },
+
   // ============================================
 
   // Example entry (copy this as a template):
