@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og';
-import { COLUMBIA_ASCII_LOGO } from '@/data/asciiLogo';
 
 export const runtime = 'edge';
 
@@ -27,49 +26,6 @@ export default async function Image() {
           overflow: 'hidden',
         }}
       >
-        {/* ASCII watermark (right side) */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            pointerEvents: 'none',
-            userSelect: 'none',
-          }}
-        >
-          <div
-            style={{
-              width: 620,
-              height: '100%',
-              overflow: 'hidden',
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}
-          >
-            <pre
-              style={{
-                margin: 0,
-                whiteSpace: 'pre',
-                transform: 'translateX(260px)',
-                fontFamily:
-                  'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                fontSize: 10,
-                lineHeight: 1.05,
-                fontWeight: 800,
-                letterSpacing: '-0.02em',
-                color: '#6cb4e4',
-                opacity: 0.24,
-                textShadow: '0 0 24px rgba(108,180,228,0.22)',
-              }}
-            >
-              {COLUMBIA_ASCII_LOGO}
-            </pre>
-          </div>
-        </div>
-
         {/* Brand mark (left side) */}
         <div
           style={{
