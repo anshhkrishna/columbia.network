@@ -671,7 +671,10 @@ a {
   }
   
   .ascii-art-background {
-    display: none;
+    top: 55%;
+    left: 72%;
+    transform: translate(-50%, -50%) scale(1.35);
+    opacity: 0.12;
   }
 
 }
