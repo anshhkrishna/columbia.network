@@ -219,10 +219,10 @@ export default function SearchableContent({ members, connections }: SearchableCo
                     )}
                 </div>
 
-            <NetworkGraph
-                members={members}
-                connections={connections}
-                highlightedMemberIds={filteredMembers.map(m => m.id)}
+                <NetworkGraph
+                    members={members}
+                    connections={connections}
+                    highlightedMemberIds={filteredMembers.map(m => m.id)}
                     searchQuery={searchQuery}
                     selectedMemberId={selectedMemberId}
                     onNodeClick={(memberId, firstName) => {
@@ -232,6 +232,9 @@ export default function SearchableContent({ members, connections }: SearchableCo
                 />
             </div>
 
+            <footer className="site-footer">
+                created by Armaan Agrawal and Ansh Krishna
+            </footer>
         </main>
     );
 }
