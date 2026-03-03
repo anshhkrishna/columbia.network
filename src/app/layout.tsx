@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   description: "A webring for Columbia University students",
   icons: {
     icon: [
+      { url: "/favicon.jpg", type: "image/jpeg" },
       { url: "/favicon.ico", type: "image/x-icon" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
     ],
   },
   openGraph: {

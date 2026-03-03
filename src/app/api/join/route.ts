@@ -8,12 +8,16 @@ interface JoinPayload {
   year?: string;
   roles?: string[];
   verticals?: string[];
+  majors?: string[];
+  minors?: string[];
   clubs?: string[];
   profilePic?: string;
   connections?: string[];
+  email?: string;
   instagram?: string;
   twitter?: string;
   linkedin?: string;
+  github?: string;
 }
 
 const OWNER = process.env.GITHUB_OWNER || 'anshhkrishna';
@@ -46,10 +50,14 @@ const buildMemberEntry = (payload: JoinPayload, memberId: string) => {
   const year = payload.year?.trim() || '';
   const roles = (payload.roles || []).filter(Boolean);
   const verticals = (payload.verticals || []).filter(Boolean);
+  const majors = (payload.majors || []).filter(Boolean);
+  const minors = (payload.minors || []).filter(Boolean);
   const connections = (payload.connections || []).filter(Boolean);
+  const email = payload.email?.trim() || '';
   const instagram = payload.instagram?.trim() || '';
   const twitter = payload.twitter?.trim() || '';
   const linkedin = payload.linkedin?.trim() || '';
+  const githubUrl = payload.github?.trim() || '';
 
   // We can't reliably accept image uploads in this JSON endpoint, so default to the conventional path.
   const profilePic = `/photos/${memberId}.jpg`;
@@ -63,10 +71,14 @@ const buildMemberEntry = (payload: JoinPayload, memberId: string) => {
   lines.push(`    year: ${tsString(year)},`);
   lines.push(`    roles: ${JSON.stringify(roles)},`);
   lines.push(`    verticals: ${JSON.stringify(verticals)},`);
+  lines.push(`    majors: ${JSON.stringify(majors)},`);
+  lines.push(`    minors: ${JSON.stringify(minors)},`);
   lines.push(`    profilePic: ${tsString(profilePic)},`);
+  lines.push(`    email: ${tsString(email)},`);
   lines.push(`    instagram: ${tsString(instagram)},`);
   lines.push(`    twitter: ${tsString(twitter)},`);
   lines.push(`    linkedin: ${tsString(linkedin)},`);
+  lines.push(`    github: ${tsString(githubUrl)},`);
   lines.push(`    connections: ${JSON.stringify(connections)},`);
   lines.push('  },');
   return { entry: lines.join('\n') + '\n\n', profilePic };
@@ -101,12 +113,15 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json().catch(() => null)) as JoinPayload | null;
-  if (!body || !body.name || !body.uni || !body.program || !body.year) {
+  const programFromMajors = body?.majors?.filter(Boolean).join(' + ') || '';
+  const program = body?.program?.trim() || programFromMajors;
+  if (!body || !body.name || !body.uni || !body.email || !program || !body.year) {
     return NextResponse.json(
-      { error: 'Name, UNI, program, and year are required.' },
+      { error: 'Name, UNI, email, major(s), and year are required.' },
       { status: 400 },
     );
   }
+  const normalizedBody: JoinPayload = { ...body, program };
 
   try {
     const repo = await github(`/repos/${OWNER}/${REPO}`);
@@ -115,7 +130,7 @@ export async function POST(request: Request) {
     const ref = await github(`/repos/${OWNER}/${REPO}/git/ref/heads/${defaultBranch}`);
     const baseSha: string = ref.object?.sha;
 
-    const branchName = `submission/${slugify(body.name)}-${Date.now()}`;
+    const branchName = `submission/${slugify(normalizedBody.name)}-${Date.now()}`;
 
     await github(`/repos/${OWNER}/${REPO}/git/refs`, {
       method: 'POST',
@@ -125,15 +140,15 @@ export async function POST(request: Request) {
       }),
     });
 
-    const websiteText = body.website || 'not provided';
+    const websiteText = normalizedBody.website || 'not provided';
 
     // Edit members file directly (instead of creating a separate submission file).
     const membersPath = 'src/data/members.ts';
     const membersFile = await github(`/repos/${OWNER}/${REPO}/contents/${membersPath}?ref=${defaultBranch}`);
     const decoded = Buffer.from(membersFile.content || '', 'base64').toString('utf8');
 
-    const baseId = slugify(body.name);
-    const uniSuffix = body.uni?.toLowerCase().trim();
+    const baseId = slugify(normalizedBody.name);
+    const uniSuffix = normalizedBody.uni?.toLowerCase().trim();
     const existingIds = new Set(
       Array.from(decoded.matchAll(/id:\s*["']([^"']+)["']/g)).map((m) => m[1]),
     );
@@ -146,7 +161,7 @@ export async function POST(request: Request) {
       throw new Error(`Unable to find insertion marker in ${membersPath}.`);
     }
     const insertAt = decoded.indexOf('\n', markerIndex);
-    const { entry, profilePic } = buildMemberEntry(body, memberId);
+    const { entry, profilePic } = buildMemberEntry(normalizedBody, memberId);
     const updated =
       decoded.slice(0, insertAt + 1) + '\n' + entry + decoded.slice(insertAt + 1);
 
@@ -154,7 +169,7 @@ export async function POST(request: Request) {
     await github(`/repos/${OWNER}/${REPO}/contents/${membersPath}`, {
       method: 'PUT',
       body: JSON.stringify({
-        message: `chore: add ${body.name} to members`,
+        message: `chore: add ${normalizedBody.name} to members`,
         content: updatedContent,
         sha: membersFile.sha,
         branch: branchName,
@@ -164,10 +179,10 @@ export async function POST(request: Request) {
     const pr = await github(`/repos/${OWNER}/${REPO}/pulls`, {
       method: 'POST',
       body: JSON.stringify({
-        title: `Add ${body.name} to the webring`,
+        title: `Add ${normalizedBody.name} to the webring`,
         head: branchName,
         base: defaultBranch,
-        body: `Automated submission from the columbia.network form.\n\nName: ${body.name}\nUNI: ${body.uni}\nWebsite: ${websiteText}\n\nPhoto: please add your photo at public${profilePic}`,
+        body: `Automated submission from the columbia.network form.\n\nName: ${normalizedBody.name}\nUNI: ${normalizedBody.uni}\nWebsite: ${websiteText}\n\nPhoto: please add your photo at public${profilePic}`,
       }),
     });
 

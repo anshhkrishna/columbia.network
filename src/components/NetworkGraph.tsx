@@ -29,6 +29,7 @@ interface SimNode extends SimulationNodeDatum {
   name: string | null;
   profilePic: string | undefined;
   website: string | null | undefined;
+  github: string | null | undefined;
 }
 
 interface SimLink extends SimulationLinkDatum<SimNode> {
@@ -167,9 +168,13 @@ export default function NetworkGraph({
             avatarChild.style.opacity = "1";
           }
 
-          if (isSelected || isNeighbor) {
-            avatarChild.style.boxShadow = "0 0 0 3px rgba(255,255,255,0.8)";
-            avatarChild.style.border = "2px solid #ffffff";
+          if (isSelected) {
+            avatarChild.style.boxShadow = "0 0 0 3px rgba(108,180,228,0.85)";
+            avatarChild.style.border = "2px solid #6cb4e4";
+            avatarChild.style.filter = "none";
+          } else if (isNeighbor) {
+            avatarChild.style.boxShadow = "0 0 0 3px rgba(108,180,228,0.55)";
+            avatarChild.style.border = "2px solid rgba(108,180,228,0.9)";
             avatarChild.style.filter = "none";
           } else {
             avatarChild.style.boxShadow = "none";
@@ -240,6 +245,7 @@ export default function NetworkGraph({
         name: member.name,
         profilePic: member.profilePic,
         website: member.website,
+        github: member.github,
         x: width / 2 + radius * Math.cos(angle),
         y: height / 2 + radius * Math.sin(angle),
       };
@@ -435,6 +441,11 @@ export default function NetworkGraph({
             const url = node.website.startsWith("http")
               ? node.website
               : `https://${node.website}`;
+            window.open(url, "_blank");
+          } else if (node.github) {
+            const url = node.github.startsWith("http")
+              ? node.github
+              : `https://${node.github}`;
             window.open(url, "_blank");
           }
         }

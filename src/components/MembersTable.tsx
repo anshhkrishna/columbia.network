@@ -1,6 +1,6 @@
 import React from 'react';
 import { Member } from '@/data/members';
-import { FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
 interface MembersTableProps {
@@ -30,6 +30,8 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
         }
     };
 
+    const normalizeUrl = (value: string) => (value.startsWith('http') ? value : `https://${value}`);
+
     return (
         <div className="members-table-container">
             <div className="search-results-info">
@@ -52,6 +54,11 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
                 </thead>
                 <tbody>
                     {members.map((member, index) => {
+                        const programDisplay = member.program?.trim()
+                            ? member.program
+                            : member.majors && member.majors.length
+                                ? member.majors.join(' + ')
+                                : '';
                         return (
                         <tr key={member.id}>
                             <td className="user-cell">
@@ -81,7 +88,7 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
                                 <span>{highlightText(member.name) || 'No name'}</span>
                                 )}
                             </td>
-                            <td>{highlightText(member.program) || '—'}</td>
+                            <td>{highlightText(programDisplay) || '—'}</td>
                             <td>
                                 {member.website && member.website.trim() ? (
                                     <a 
@@ -131,7 +138,27 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
                                             <FaLinkedin size={16} />
                                         </a>
                                     )}
-                                    {!member.instagram && !member.twitter && !member.linkedin && (
+                                    {member.email && member.email.trim() && (
+                                        <a
+                                            href={`mailto:${member.email.trim()}`}
+                                            className="social-icon-link"
+                                            title="Email"
+                                        >
+                                            <FaEnvelope size={16} />
+                                        </a>
+                                    )}
+                                    {member.github && member.github.trim() && (
+                                        <a
+                                            href={normalizeUrl(member.github)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="social-icon-link"
+                                            title="GitHub"
+                                        >
+                                            <FaGithub size={16} />
+                                        </a>
+                                    )}
+                                    {!member.instagram && !member.twitter && !member.linkedin && !member.email && !member.github && (
                                         <span className="table-placeholder">—</span>
                                     )}
                                 </div>

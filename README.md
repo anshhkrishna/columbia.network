@@ -6,7 +6,7 @@ A webring for Columbia University students.
 
 ## Join the Webring
 
-**Requirements:** Columbia student (website optional but encouraged)
+**Requirements:** Columbia student + contact email (website optional but encouraged)
 
 **1. Add your photo**  
 Save a square image (400x400px) to:
@@ -23,6 +23,8 @@ public/photos/your-name.jpg
   name: "Your Name",
   website: "https://yourwebsite.com", // optional
   profilePic: "/photos/your-name.jpg",
+  majors: ["Computer Science"],
+  minors: [],
   connections: ["ansh-krishna"],
 },
 ```
@@ -35,9 +37,13 @@ Optional fields:
 | `year` | Graduation year (e.g. `"2027"`) |
 | `roles` | What you do (pick from list below) |
 | `verticals` | Industries you're into (pick from list below) |
+| `majors` | Array of majors from the join form list |
+| `minors` | Array of minors from the join form list |
+| `email` | Contact email (e.g. `"uni@columbia.edu"`) |
 | `instagram` | Full URL (e.g. `"https://instagram.com/you"`) |
 | `twitter` | Full URL (e.g. `"https://x.com/you"`) |
 | `linkedin` | Full URL (e.g. `"https://linkedin.com/in/you"`) |
+| `github` | Full URL (e.g. `"https://github.com/you"`) |
 
 Roles: engineering, design, product, growth, ai/ml, research, hardware, quant, software, finance, vc
 

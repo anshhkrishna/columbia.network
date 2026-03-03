@@ -68,6 +68,10 @@ export default function SearchableContent({ members, connections }: SearchableCo
                 member.name?.toLowerCase().includes(q) ||
                 member.program?.toLowerCase().includes(q) ||
                 member.website?.toLowerCase().includes(q) ||
+                member.github?.toLowerCase().includes(q) ||
+                member.email?.toLowerCase().includes(q) ||
+                member.majors?.some(m => m.toLowerCase().includes(q)) ||
+                member.minors?.some(m => m.toLowerCase().includes(q)) ||
                 member.roles?.some(r => r.toLowerCase().includes(q)) ||
                 member.verticals?.some(v => v.toLowerCase().includes(q)) ||
                 member.year?.includes(q)
@@ -105,6 +109,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
                     <div className="title-row">
                         <h1 className="title">
                             <span className="cu-accent">columbia</span>.network
+                            <span className="version-pill">v1.0</span>
                         </h1>
                     </div>
                     <div className="description">

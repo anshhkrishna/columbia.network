@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="cu.n">
-  <rect x="2" y="2" width="60" height="60" rx="12" fill="#000000"/>
-  <text x="14" y="40" font-family="Roboto, Arial, sans-serif" font-size="24" font-weight="800" letter-spacing="-0.5">
-    <tspan fill="#6cb4e4">cu</tspan><tspan fill="#ffffff">.n</tspan>
-  </text>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="cu.net">
+  <rect x="0" y="0" width="64" height="64" rx="12" fill="#000000"/>
+  <text x="32" y="28" text-anchor="middle" font-family="Roboto, Arial, sans-serif" font-size="30" font-weight="900" letter-spacing="-0.9" fill="#6cb4e4">cu</text>
+  <text x="32" y="54" text-anchor="middle" font-family="Roboto, Arial, sans-serif" font-size="22" font-weight="800" letter-spacing="-0.6" fill="#ffffff">.net</text>
 </svg>
