@@ -62,6 +62,7 @@ a {
   padding: 4rem;
   gap: 4rem;
   position: relative;
+  overflow-x: hidden;
 }
 
 @media (min-width: 1024px) {
@@ -99,16 +100,16 @@ a {
   gap: 1rem;
   position: relative;
   z-index: 1;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .graph-watermark {
   position: absolute;
-  bottom: -10%;
+  bottom: -25%;
   left: 50%;
   transform: translateX(-50%);
-  width: 110%;
-  max-width: 500px;
+  width: 160%;
+  max-width: none;
   z-index: 0;
   pointer-events: none;
   user-select: none;
