@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Member, Connection } from "@/data/members";
-import { COLUMBIA_ASCII_LOGO } from "@/data/asciiLogo";
 import {
   forceSimulation,
   forceLink,
@@ -577,12 +576,9 @@ export default function NetworkGraph({
       className="network-graph-container"
       style={{
         width: "100%",
-        height: "450px",
+        height: "400px",
       }}
     >
-      <div className="network-graph-ascii" aria-hidden="true">
-        <pre>{COLUMBIA_ASCII_LOGO}</pre>
-      </div>
       <div ref={innerRef} className="network-graph-inner" />
     </div>
   );

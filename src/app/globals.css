@@ -75,8 +75,8 @@ a {
   }
 
   .graph-section {
-    flex: 0.7;
-    max-width: 440px;
+    flex: 0.55;
+    max-width: 380px;
     position: sticky;
     top: 2rem;
   }
@@ -97,7 +97,6 @@ a {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  opacity: 0.85;
   position: relative;
   z-index: 1;
 }
