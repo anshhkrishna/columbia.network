@@ -126,9 +126,9 @@ export default function NetworkGraph({
         line.setAttribute("y1", y1.toString());
         line.setAttribute("x2", x2.toString());
         line.setAttribute("y2", y2.toString());
-        line.setAttribute("stroke", isSelectedLink ? "#ffffff" : "#555555");
+        line.setAttribute("stroke", isSelectedLink ? "#ffffff" : "#666666");
         line.setAttribute("stroke-width", isSelectedLink ? "2" : "1");
-        line.setAttribute("opacity", isSelectedLink ? "0.8" : "0.2");
+        line.setAttribute("opacity", isSelectedLink ? "0.9" : "0.35");
         svg.appendChild(line);
       }
     });
