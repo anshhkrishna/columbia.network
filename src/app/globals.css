@@ -106,7 +106,7 @@ a {
 .graph-watermark {
   position: absolute;
   bottom: -25%;
-  left: 50%;
+  left: 60%;
   transform: translateX(-50%);
   width: 160%;
   max-width: none;
