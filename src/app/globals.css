@@ -484,6 +484,25 @@ a {
   min-width: 0;
 }
 
+.name-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.name-button:hover {
+  text-decoration: underline;
+}
+
 .avatar {
   width: 32px;
   height: 32px;

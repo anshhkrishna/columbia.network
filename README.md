@@ -58,3 +58,5 @@ Once you've added yourself locally (or even if you haven't), fill out the form a
 - https://columbia.network/join
 
 The form opens a pull request for you that updates `src/data/members.ts`.
+
+Tip: On the members table, the links column stays compact by default; it expands to the full set after you search or click a member's name.
