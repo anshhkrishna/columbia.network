@@ -256,14 +256,14 @@ export default function NetworkGraph({
 
     // === Physics config — tweak everything here ===
     const physics = {
-      chargeStrength: -400, // repulsion between nodes; more negative = spread further apart
-      linkDistance: 120, // target edge length in px; higher = connected nodes sit further apart
-      collideRadius: 30, // min distance between node centers; prevents overlap
-      centerStrengthX: 0.02, // horizontal pull toward center; higher = snaps back faster
-      centerStrengthY: 0.02, // vertical pull toward center; higher = snaps back faster
-      velocityDecay: 0.25, // friction; lower = more momentum/overshoot/bounce
-      alpha: 0.3, // constant energy level; higher = more movement
-      dragAlpha: 0.4, // energy level while dragging; higher = neighbors react more
+      chargeStrength: -300,
+      linkDistance: 100,
+      collideRadius: 28,
+      centerStrengthX: 0.08,
+      centerStrengthY: 0.08,
+      velocityDecay: 0.3,
+      alpha: 0.3,
+      dragAlpha: 0.4,
     };
 
     const simulation = forceSimulation<SimNode>(nodesRef.current)
