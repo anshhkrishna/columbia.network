@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: "/opengraph-image",
+        url: "/api/og",
         width: 1200,
         height: 630,
         alt: "columbia.network",
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
     description: "A webring for Columbia University students",
     images: [
       {
-        url: "/twitter-image",
+        url: "/api/og",
         width: 1200,
         height: 630,
         alt: "columbia.network",
@@ -65,6 +66,7 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
