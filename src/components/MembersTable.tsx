@@ -7,9 +7,10 @@ interface MembersTableProps {
   members: Member[];
   searchQuery?: string;
   totalMembers?: number;
+  isFiltered?: boolean;
 }
 
-export default function MembersTable({ members, searchQuery, totalMembers }: MembersTableProps) {
+export default function MembersTable({ members, searchQuery, totalMembers, isFiltered }: MembersTableProps) {
 
   const highlightText = (text: string | null | undefined) => {
     if (!text || !searchQuery) return text || "";
@@ -49,6 +50,10 @@ export default function MembersTable({ members, searchQuery, totalMembers }: Mem
           members.length === 0
             ? `No results found for "${searchQuery}"`
             : `Found ${members.length} of ${totalMembers ?? members.length} member${members.length !== 1 ? "s" : ""}`
+        ) : isFiltered && totalMembers != null ? (
+          members.length === 0
+            ? "No members match the selected filters"
+            : `Found ${members.length} of ${totalMembers} member${members.length !== 1 ? "s" : ""}`
         ) : totalMembers != null ? (
           `${totalMembers} member${totalMembers === 1 ? "" : "s"}`
         ) : (

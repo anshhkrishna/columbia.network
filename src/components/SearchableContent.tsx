@@ -141,7 +141,12 @@ export default function SearchableContent({ members, connections }: SearchableCo
                 </div>
 
                 <div className="table-section">
-                    <MembersTable members={filteredMembers} searchQuery={searchQuery} totalMembers={members.length} />
+                    <MembersTable
+                  members={filteredMembers}
+                  searchQuery={searchQuery}
+                  totalMembers={members.length}
+                  isFiltered={hasActiveFilters}
+                />
                 </div>
             </div>
 
