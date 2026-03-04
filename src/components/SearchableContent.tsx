@@ -71,12 +71,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
         if (searchQuery) {
             const q = searchQuery.toLowerCase();
             result = result.filter(member =>
-                member.name?.toLowerCase().includes(q) ||
-                member.program?.toLowerCase().includes(q) ||
-                member.website?.toLowerCase().includes(q) ||
-                member.roles?.some(r => r.toLowerCase().includes(q)) ||
-                member.verticals?.some(v => v.toLowerCase().includes(q)) ||
-                member.year?.includes(q)
+                member.name?.toLowerCase().includes(q)
             );
         }
 
@@ -156,7 +151,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
                         <Search size={18} />
                         <input
                             type="text"
-                            placeholder="search members..."
+                            placeholder="search by name..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="search-input"
