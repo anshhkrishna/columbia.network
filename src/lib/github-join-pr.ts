@@ -25,12 +25,12 @@ function formatMemberEntry(entry: Record<string, unknown>): string {
 }
 
 function insertMemberIntoFile(content: string, newBlock: string): string {
-  const marker = "// ADD YOUR ENTRY BELOW THIS LINE";
-  const idx = content.indexOf(marker);
+  // Insert at END of members array to reduce merge conflicts when merging join PRs.
+  // New PRs add at the bottom; main's merged PRs add at the top - different regions = less conflict.
+  const markerBlock = "  // ============================================\n  // ADD YOUR ENTRY ABOVE THIS LINE";
+  const idx = content.indexOf(markerBlock);
   if (idx === -1) return content;
-  const insertAt = content.indexOf("\n", idx);
-  if (insertAt === -1) return content;
-  return content.slice(0, insertAt) + "\n\n" + newBlock + "\n" + content.slice(insertAt);
+  return content.slice(0, idx) + newBlock + "\n\n" + content.slice(idx);
 }
 
 export interface CreateJoinPRParams {
