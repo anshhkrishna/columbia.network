@@ -94,6 +94,7 @@ export const members: Member[] = [
     email: "dg3532@columbia.edu",
     roles: ["engineering", "ai/ml", "research", "hardware", "quant", "software"],
     verticals: ["ai", "robotics", "hard tech", "defense"],
+    profilePic: "/photos/dev-gehlaut.png",
     linkedin: "https://www.linkedin.com/in/dev-gehlaut/",
     connections: ["ethan-schales", "rahul-arora", "ansh-krishna"],
   },
@@ -654,6 +655,7 @@ export const members: Member[] = [
     email: "ss7017@columbia.edu",
     roles: ["engineering", "product", "ai/ml", "software"],
     verticals: ["ai", "edtech", "saas", "consumer", "creator tools"],
+    profilePic: "/photos/shaina-sahu.png",
     linkedin: "https://www.linkedin.com/in/shaina-sahu-32b330284/",
   },
   {
@@ -663,6 +665,7 @@ export const members: Member[] = [
     email: "cc5011@columbia.edu",
     roles: ["engineering", "ai/ml", "research", "software"],
     verticals: ["ai", "saas", "creator tools", "fintech"],
+    profilePic: "/photos/chris-chang.png",
     linkedin: "https://www.linkedin.com/in/cchang3906/",
     github: "https://github.com/cchang3906",
     connections: ["armaan-agrawal", "sid-rout", "alex-jerpelea", "jonathan-wang", "ansh-krishna", "mihir-garimella", "rahul-arora"],
