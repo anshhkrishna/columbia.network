@@ -663,10 +663,10 @@ a {
   color: var(--foreground);
 }
 
-.members-table th:nth-child(1) { width: 33%; }
-.members-table th:nth-child(2) { width: 30%; }
-.members-table th:nth-child(3) { width: 22%; }
-.members-table th:nth-child(4) { width: 15%; padding-left: 1rem; }
+.members-table th:nth-child(1) { width: 28%; }
+.members-table th:nth-child(2) { width: 28%; }
+.members-table th:nth-child(3) { width: 19%; }
+.members-table th:nth-child(4) { width: 25%; padding-left: 1rem; min-width: 120px; }
 
 .members-table td {
   padding: 1rem 1rem 1rem 0;
@@ -678,6 +678,7 @@ a {
 .members-table td:nth-child(4) {
   padding-left: 1rem;
   padding-right: 2rem;
+  overflow: visible;
 }
 
 .user-cell {
@@ -773,6 +774,7 @@ a {
 /* Social Icons */
 .social-icons {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
   min-height: 20px;
