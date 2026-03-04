@@ -648,6 +648,15 @@ export const members: Member[] = [
   },
 
   {
+    id: "shaina-sahu",
+    name: "Shaina Sahu",
+    program: "CS",
+    email: "ss7017@columbia.edu",
+    roles: ["engineering", "product", "ai/ml", "software"],
+    verticals: ["ai", "edtech", "saas", "consumer", "creator tools"],
+    linkedin: "https://www.linkedin.com/in/shaina-sahu-32b330284/",
+  },
+  {
     id: "chris-chang",
     name: "Chris Chang",
     program: "CS",
