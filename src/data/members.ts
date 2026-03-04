@@ -85,7 +85,7 @@ export const members: Member[] = [
     roles: ["engineering", "ai/ml", "research", "hardware", "quant", "software"],
     verticals: ["ai", "robotics", "hard tech", "defense"],
     linkedin: "https://www.linkedin.com/in/dev-gehlaut/",
-    connections: ["ethan-schales", "rahul-arora"],
+    connections: ["ethan-schales", "rahul-arora", "ansh-krishna"],
   },
 
 
