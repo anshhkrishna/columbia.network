@@ -59,7 +59,7 @@ a {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 4rem;
+  padding: 4rem 4rem 4rem 2rem;
   gap: 4rem;
   position: relative;
   overflow-x: hidden;
@@ -76,8 +76,8 @@ a {
   }
 
   .graph-section {
-    flex: 0.55;
-    max-width: 380px;
+    flex: 0.65;
+    max-width: 460px;
     position: sticky;
     top: 2rem;
   }
@@ -119,7 +119,7 @@ a {
 .network-graph-container {
   border-radius: 10px;
   overflow: hidden;
-  background: var(--background);
+  background: rgba(0, 0, 0, 0.70);
   border: 1px solid var(--border);
   position: relative;
   z-index: 1;
@@ -574,6 +574,18 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
+}
+
+.filter-select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--foreground);
+  font-size: 0.85rem;
+  font-family: 'Roboto', sans-serif;
+  cursor: pointer;
+  min-width: 160px;
 }
 
 .filter-tag {

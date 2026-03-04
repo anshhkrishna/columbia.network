@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   title: "columbia.network",
   description: "A webring for Columbia University students",
   icons: {
-    icon: [{ url: "/icon.png", type: "image/png" }, { url: "/favicon.ico" }],
+    icon: [{ url: "/icon.png", type: "image/png" }],
     shortcut: [{ url: "/favicon.ico" }],
     apple: [{ url: "/apple-icon.png", type: "image/png" }],
   },

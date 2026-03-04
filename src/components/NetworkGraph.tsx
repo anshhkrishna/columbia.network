@@ -576,7 +576,7 @@ export default function NetworkGraph({
       className="network-graph-container"
       style={{
         width: "100%",
-        height: "400px",
+        height: "500px",
       }}
     >
       <div ref={innerRef} className="network-graph-inner" />

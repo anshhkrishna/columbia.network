@@ -31,13 +31,14 @@ export default function SearchableContent({ members, connections }: SearchableCo
     const [shuffledMembers, setShuffledMembers] = useState<Member[]>(members);
     const [activeRoles, setActiveRoles] = useState<Set<string>>(new Set());
     const [activeVerticals, setActiveVerticals] = useState<Set<string>>(new Set());
+    const [connectedToMemberId, setConnectedToMemberId] = useState<string | null>(null);
     const [showFilters, setShowFilters] = useState(false);
 
     useEffect(() => {
         setShuffledMembers(shuffleArray(members));
     }, [members]);
 
-    const hasActiveFilters = activeRoles.size > 0 || activeVerticals.size > 0;
+    const hasActiveFilters = activeRoles.size > 0 || activeVerticals.size > 0 || connectedToMemberId != null;
 
     const toggleRole = (role: string) => {
         setActiveRoles(prev => {
@@ -60,6 +61,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
     const clearAllFilters = () => {
         setActiveRoles(new Set());
         setActiveVerticals(new Set());
+        setConnectedToMemberId(null);
         setSearchQuery('');
     };
 
@@ -90,8 +92,18 @@ export default function SearchableContent({ members, connections }: SearchableCo
             );
         }
 
+        if (connectedToMemberId) {
+            const connectedIds = new Set<string>();
+            connections.forEach(({ fromId, toId }) => {
+                if (fromId === connectedToMemberId) connectedIds.add(toId);
+                if (toId === connectedToMemberId) connectedIds.add(fromId);
+            });
+            connectedIds.add(connectedToMemberId);
+            result = result.filter(member => connectedIds.has(member.id));
+        }
+
         return result;
-    }, [shuffledMembers, searchQuery, activeRoles, activeVerticals]);
+    }, [shuffledMembers, searchQuery, activeRoles, activeVerticals, connectedToMemberId, connections]);
 
     const filteredMemberIds = new Set(filteredMembers.map(m => m.id));
     const isFiltering = searchQuery || hasActiveFilters;
@@ -159,7 +171,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
                             <span>filters</span>
                             {hasActiveFilters && (
                                 <span className="filter-count">
-                                    {activeRoles.size + activeVerticals.size}
+                                    {activeRoles.size + activeVerticals.size + (connectedToMemberId ? 1 : 0)}
                                 </span>
                             )}
                             {showFilters ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -198,6 +210,20 @@ export default function SearchableContent({ members, connections }: SearchableCo
                                 </div>
                             </div>
 
+                            <div className="filter-group">
+                                <span className="filter-label">connected to</span>
+                                <select
+                                    className="filter-select"
+                                    value={connectedToMemberId ?? ""}
+                                    onChange={(e) => setConnectedToMemberId(e.target.value || null)}
+                                >
+                                    <option value="">All members</option>
+                                    {[...members].sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "")).map(m => (
+                                        <option key={m.id} value={m.id}>{m.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <button 
                                 className={`clear-filters-btn ${!hasActiveFilters ? 'clear-filters-btn-disabled' : ''}`} 
                                 onClick={clearAllFilters}
@@ -215,7 +241,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
                     connections={connections}
                     highlightedMemberIds={filteredMembers.map(m => m.id)}
                     searchQuery={searchQuery}
-                    onNodeClick={(firstName) => setSearchQuery(firstName)}
+                    onNodeClick={(_, firstName) => setSearchQuery(firstName ?? "")}
                 />
             </div>
 

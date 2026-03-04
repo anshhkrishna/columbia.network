@@ -26,7 +26,6 @@ export default function JoinPage() {
   const [prUrl, setPrUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [connSearch, setConnSearch] = useState("");
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   const set = (key: string, value: string) =>
@@ -51,13 +50,22 @@ export default function JoinPage() {
     reader.readAsDataURL(file);
   };
 
-  const filteredMembers = useMemo(() => {
-    const selected = members.filter((m) => form.connections.includes(m.id));
-    const rest = members.filter((m) => !form.connections.includes(m.id));
-    const q = connSearch.toLowerCase().trim();
-    const filtered = q ? rest.filter((m) => m.name.toLowerCase().includes(q)) : rest;
-    return [...selected, ...filtered];
-  }, [connSearch, form.connections]);
+  const availableMembers = useMemo(
+    () => members
+      .filter((m) => !form.connections.includes(m.id))
+      .sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "")),
+    [form.connections]
+  );
+
+  const addConnection = (memberId: string) => {
+    if (memberId && !form.connections.includes(memberId)) {
+      toggle("connections", memberId);
+    }
+  };
+
+  const removeConnection = (memberId: string) => {
+    toggle("connections", memberId);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -285,24 +293,38 @@ export default function JoinPage() {
             {/* connections */}
             <div className="jf-group">
               <label className="jf-label">connections</label>
-              <input
+              <select
                 className="jf-input"
-                placeholder="search people..."
-                value={connSearch}
-                onChange={(e) => setConnSearch(e.target.value)}
-              />
-              <div className="jf-chips jf-chips-scroll">
-                {filteredMembers.map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    className={`jf-chip ${form.connections.includes(m.id) ? "jf-chip-on" : ""}`}
-                    onClick={() => toggle("connections", m.id)}
-                  >
+                value=""
+                onChange={(e) => {
+                  addConnection(e.target.value);
+                  e.target.value = "";
+                }}
+              >
+                <option value="">select someone to add...</option>
+                {availableMembers.map((m) => (
+                  <option key={m.id} value={m.id}>
                     {m.name}
-                  </button>
+                  </option>
                 ))}
-              </div>
+              </select>
+              {form.connections.length > 0 && (
+                <div className="jf-chips jf-chips-scroll" style={{ marginTop: "0.5rem" }}>
+                  {form.connections.map((id) => {
+                    const m = members.find((x) => x.id === id);
+                    return m ? (
+                      <button
+                        key={m.id}
+                        type="button"
+                        className="jf-chip jf-chip-on"
+                        onClick={() => removeConnection(m.id)}
+                      >
+                        {m.name} ×
+                      </button>
+                    ) : null;
+                  })}
+                </div>
+              )}
             </div>
 
             {/* notes */}
