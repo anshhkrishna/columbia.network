@@ -97,3 +97,15 @@ Token permissions:
 - Classic PAT: `repo` scope
 
 Note: Deploying with a write token means anyone can submit the form and create PRs. Add rate limiting / CAPTCHA / stricter validation if you expect spam.
+
+---
+
+## Deploy to Vercel
+
+1. Push this repo to GitHub.
+2. Import the project in [Vercel](https://vercel.com) (Add New → Project).
+3. Add environment variables in **Settings** → **Environment Variables**:
+   - `GITHUB_TOKEN` — GitHub personal access token (see above)
+   - `GITHUB_OWNER` — GitHub org/username (e.g. `anshhkrishna`)
+   - `GITHUB_REPO` — Repo name (e.g. `columbia.network`)
+4. Deploy (or redeploy after adding env vars).
