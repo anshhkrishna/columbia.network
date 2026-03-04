@@ -78,6 +78,17 @@ export const members: Member[] = [
   // ADD YOUR ENTRY BELOW THIS LINE
 
   {
+    id: "dev-gehlaut",
+    name: "Dev Gehlaut",
+    program: "Physics + CS",
+    email: "dg3532@columbia.edu",
+    roles: ["engineering", "ai/ml", "research", "hardware", "quant", "software"],
+    verticals: ["ai", "robotics", "hard tech", "defense"],
+    linkedin: "https://www.linkedin.com/in/dev-gehlaut/",
+    connections: ["ethan-schales", "rahul-arora", "ansh-krishna"],
+  },
+
+  {
     id: "eddy-xu",
     name: "Eddy Xu",
     website: "https://eddy.build",
