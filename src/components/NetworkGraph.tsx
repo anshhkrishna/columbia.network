@@ -433,11 +433,6 @@ export default function NetworkGraph({
               ? node.website
               : `https://${node.website}`;
             window.open(url, "_blank");
-          } else if (node.github) {
-            const url = node.github.startsWith("http")
-              ? node.github
-              : `https://${node.github}`;
-            window.open(url, "_blank");
           }
         }
         nodeDiv.__isDragging = false;

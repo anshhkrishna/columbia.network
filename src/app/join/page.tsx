@@ -69,6 +69,10 @@ export default function JoinPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.profilePic?.trim()) {
+      setError("Profile photo is required.");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     setPrUrl(null);
@@ -226,7 +230,7 @@ export default function JoinPage() {
 
             {/* photo */}
             <div className="jf-group">
-              <label className="jf-label">profile photo</label>
+              <label className="jf-label">profile photo<span className="jf-req">*</span></label>
               <div className="jf-photo-row">
                 {preview ? (
                   <img src={preview} alt="preview" className="jf-photo-thumb" />

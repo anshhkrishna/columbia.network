@@ -6,6 +6,9 @@ export async function POST(request: Request) {
   if (!payload || !payload.name) {
     return NextResponse.json({ ok: false, error: "name is required" }, { status: 400 });
   }
+  if (!payload.profilePic?.trim()) {
+    return NextResponse.json({ ok: false, error: "profile photo is required" }, { status: 400 });
+  }
 
   const slug = String(payload.name)
     .toLowerCase().trim()
