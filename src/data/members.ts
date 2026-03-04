@@ -656,6 +656,17 @@ export const members: Member[] = [
     verticals: ["ai", "edtech", "saas", "consumer", "creator tools"],
     linkedin: "https://www.linkedin.com/in/shaina-sahu-32b330284/",
   },
+  {
+    id: "chris-chang",
+    name: "Chris Chang",
+    program: "CS",
+    email: "cc5011@columbia.edu",
+    roles: ["engineering", "ai/ml", "research", "software"],
+    verticals: ["ai", "saas", "creator tools", "fintech"],
+    linkedin: "https://www.linkedin.com/in/cchang3906/",
+    github: "https://github.com/cchang3906",
+    connections: ["armaan-agrawal", "sid-rout", "alex-jerpelea", "jonathan-wang", "ansh-krishna", "mihir-garimella", "rahul-arora"],
+  },
 
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
