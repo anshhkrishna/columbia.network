@@ -191,6 +191,20 @@ a {
   color: #4a90d9;
 }
 
+/* Corner attribution - only visible when scrolled to bottom */
+.inspired-by {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 0.75rem;
+  color: var(--tertiary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.inspired-by:hover {
+  color: var(--secondary);
+}
+
 /* ── Join Form ── */
 
 .jf-card {

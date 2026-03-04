@@ -246,6 +246,15 @@ export default function SearchableContent({ members, connections }: SearchableCo
             </div>
 
         <AsciiBackground />
+
+            <a
+                href="https://uwaterloo.network"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inspired-by"
+            >
+                inspired by uwaterloo.network
+            </a>
         </main>
     );
 }
