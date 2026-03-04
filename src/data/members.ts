@@ -78,6 +78,15 @@ export const members: Member[] = [
   // ADD YOUR ENTRY BELOW THIS LINE
 
   {
+    id: "james-karmacharya",
+    name: "James Karmacharya",
+    program: "Econ-French",
+    email: "jk4693@columbia.edu",
+    profilePic: "https://media.licdn.com/dms/image/v2/D4E03AQGLbPjP7MbXGg/profile-displayphoto-crop_800_800/B4EZhD4LLXGYAI-/0/1753485457623?e=1774483200&v=beta&t=okHpudZgDYc2-sP6tHWJAQ2OHHTyOQ8J2QO4XcSV_Gs",
+    linkedin: "https://www.linkedin.com/in/jkarma111",
+  },
+
+  {
     id: "dev-gehlaut",
     name: "Dev Gehlaut",
     program: "Physics + CS",
