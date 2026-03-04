@@ -78,6 +78,18 @@ export const members: Member[] = [
   // ADD YOUR ENTRY BELOW THIS LINE
 
   {
+    id: "tanish-sonone",
+    name: "Tanish Sonone",
+    program: "Applied Math",
+    email: "trs2176@columbia.edu",
+    roles: ["research", "finance", "ai/ml", "quant"],
+    verticals: ["healthcare"],
+    linkedin: "https://www.linkedin.com/in/tanishsonone/",
+    connections: ["armaan-agrawal", "ansh-krishna", "abhiram-nandiraju", "alex-jerpelea"],
+  },
+
+
+  {
     id: "ryon-roque",
     name: "Ryon Roque",
     program: "Civil Engineering",
