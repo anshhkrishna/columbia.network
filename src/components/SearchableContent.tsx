@@ -21,6 +21,12 @@ function shuffleArray<T>(array: T[]): T[] {
     return shuffled;
 }
 
+function shuffleWithWebsitesFirst(members: Member[]): Member[] {
+    const withWebsite = members.filter(m => m.website?.trim());
+    const withoutWebsite = members.filter(m => !m.website?.trim());
+    return [...shuffleArray(withWebsite), ...shuffleArray(withoutWebsite)];
+}
+
 interface SearchableContentProps {
     members: Member[];
     connections: Connection[];
@@ -35,7 +41,7 @@ export default function SearchableContent({ members, connections }: SearchableCo
     const [showFilters, setShowFilters] = useState(false);
 
     useEffect(() => {
-        setShuffledMembers(shuffleArray(members));
+        setShuffledMembers(shuffleWithWebsitesFirst(members));
     }, [members]);
 
     const hasActiveFilters = activeRoles.size > 0 || activeVerticals.size > 0 || connectedToMemberId != null;
