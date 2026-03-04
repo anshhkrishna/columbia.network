@@ -647,6 +647,16 @@ export const members: Member[] = [
     connections: ["ansh-krishna", "sid-rout", "rahul-arora"],
   },
 
+  {
+    id: "shaina-sahu",
+    name: "Shaina Sahu",
+    program: "CS",
+    email: "ss7017@columbia.edu",
+    roles: ["engineering", "product", "ai/ml", "software"],
+    verticals: ["ai", "edtech", "saas", "consumer", "creator tools"],
+    linkedin: "https://www.linkedin.com/in/shaina-sahu-32b330284/",
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
