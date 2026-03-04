@@ -6,9 +6,10 @@ import { FaXTwitter } from "react-icons/fa6";
 interface MembersTableProps {
   members: Member[];
   searchQuery?: string;
+  totalMembers?: number;
 }
 
-export default function MembersTable({ members, searchQuery }: MembersTableProps) {
+export default function MembersTable({ members, searchQuery, totalMembers }: MembersTableProps) {
 
   const highlightText = (text: string | null | undefined) => {
     if (!text || !searchQuery) return text || "";
@@ -47,7 +48,9 @@ export default function MembersTable({ members, searchQuery }: MembersTableProps
         {searchQuery ? (
           members.length === 0
             ? `No results found for "${searchQuery}"`
-            : `Found ${members.length} member${members.length !== 1 ? "s" : ""}`
+            : `Found ${members.length} of ${totalMembers ?? members.length} member${members.length !== 1 ? "s" : ""}`
+        ) : totalMembers != null ? (
+          `${totalMembers} member${totalMembers === 1 ? "" : "s"}`
         ) : (
           <span className="search-results-placeholder">&nbsp;</span>
         )}
