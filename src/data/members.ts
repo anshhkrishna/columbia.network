@@ -78,6 +78,19 @@ export const members: Member[] = [
   // ADD YOUR ENTRY BELOW THIS LINE
 
   {
+    id: "eddy-xu",
+    name: "Eddy Xu",
+    website: "https://eddy.build",
+    email: "eddy@build.ai",
+    roles: ["ai/ml", "hardware"],
+    verticals: ["hard tech"],
+    profilePic: "/photos/eddy-xu.png",
+    twitter: "https://x.com/eddybuild",
+    linkedin: "https://www.linkedin.com/in/edwardxu1569/",
+    connections: ["ansh-krishna", "joseph-jojoe"],
+  },
+
+  {
     id: "mike-yu",
     name: "Mike Yu",
     website: "https://mikeyuyue.github.io/",
