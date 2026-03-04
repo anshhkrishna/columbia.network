@@ -85,6 +85,8 @@ export const members: Member[] = [
     roles: ["ai/ml", "hardware"],
     verticals: ["hard tech"],
     twitter: "x.com/eddybuild",
+    linkedin: "https://www.linkedin.com/in/edwardxu1569/",
+    connections: ["ansh-krishna", "joseph-jojoe"],
   },
 
 
