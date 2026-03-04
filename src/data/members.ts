@@ -78,6 +78,17 @@ export const members: Member[] = [
   // ADD YOUR ENTRY BELOW THIS LINE
 
   {
+    id: "eddy-xu",
+    name: "Eddy Xu",
+    website: "eddy.build",
+    email: "eddy@build.ai",
+    roles: ["ai/ml", "hardware"],
+    verticals: ["hard tech"],
+    twitter: "x.com/eddybuild",
+  },
+
+
+  {
     id: "jeremy-galang",
     name: "Jeremy Galang",
     program: "Financial Economics & Math",
