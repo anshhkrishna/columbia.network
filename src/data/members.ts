@@ -100,6 +100,18 @@ export const members: Member[] = [
   },
 
   {
+    id: "tanish-sonone",
+    name: "Tanish Sonone",
+    program: "Applied Math",
+    email: "trs2176@columbia.edu",
+    roles: ["research", "finance", "ai/ml", "quant"],
+    verticals: ["healthcare"],
+    profilePic: "/photos/tanish-sonone.png",
+    linkedin: "https://www.linkedin.com/in/tanishsonone/",
+    connections: ["armaan-agrawal", "ansh-krishna", "abhiram-nandiraju", "alex-jerpelea"],
+  },
+
+  {
     id: "eddy-xu",
     name: "Eddy Xu",
     website: "https://eddy.build",
@@ -671,8 +683,7 @@ export const members: Member[] = [
     connections: ["armaan-agrawal", "sid-rout", "alex-jerpelea", "jonathan-wang", "ansh-krishna", "mihir-garimella", "rahul-arora"],
   },
 
-  {
-    id: "claryssa-tarigan",
+  {    id: "claryssa-tarigan",
     name: "Claryssa Tarigan",
     website: "https://portfolio-lyart-three-57.vercel.app/",
     program: "CS",
@@ -684,7 +695,76 @@ export const members: Member[] = [
     linkedin: "https://www.linkedin.com/in/claryssa-yuanwie",
     github: "https://github.com/claryssayuanwie",
     connections: ["alex-jerpelea", "shaina-sahu", "naythan-chan", "anay-garodia"],
+
+    id: "samvrit-rao",
+    name: "Samvrit Rao",
+    program: "Psychology & Data Science",
+    email: "svr2127@columbia.edu",
+    roles: ["product", "design", "ai/ml", "vc", "finance", "research"],
+    verticals: ["ai", "healthcare", "edtech"],
+    profilePic: "/photos/samvrit-rao.png",
+    linkedin: "https://www.linkedin.com/in/samvr/",
+    github: "https://github.com/samvrit-rao",
+    connections: ["abhinav-goel", "abhiram-nandiraju", "ansh-krishna", "armaan-agrawal", "chris-chang", "anibal-segovia", "mihir-garimella", "rahul-arora", "tanush-sawhney", "veer-chopra"],
   },
+
+  {
+    id: "shinnyom-park",
+    name: "Shinnyom Park",
+    program: "Financial Economics & CS",
+    email: "sp4587@columbia.edu",
+    profilePic: "/photos/shinnyom-park.jpg",
+    linkedin: "https://www.linkedin.com/in/shinnyom-david-park-642775363",
+  },
+
+  {
+    id: "christopher-lee",
+    name: "Christopher Lee",
+    program: "Math & CS",
+    email: "cl4371@columbia.edu",
+    profilePic: "/photos/christopher-lee.png",
+    linkedin: "https://www.linkedin.com/in/christopher-lee8/",
+  },
+
+  {
+    id: "mukilan-rajasekar",
+    name: "Mukilan Rajasekar",
+    program: "fin econ",
+    email: "mukilan.rajasekar@columbia.edu",
+    roles: ["finance"],
+    verticals: ["fintech"],
+    profilePic: "/photos/mukilan-rajasekar.jpg",
+    linkedin: "https://www.linkedin.com/in/mukilan-r/",
+    connections: ["abhinav-goel", "abhiram-nandiraju", "ansh-krishna", "armaan-agrawal", "chris-chang", "justine-mach", "jonathan-wang", "sid-rout", "veer-chopra", "ethan-schales", "rahul-arora", "mihir-garimella"],
+  },
+
+  {
+    id: "tensae-laki",
+    name: "Tensae Laki",
+    program: "CS + econ or biz",
+    email: "thl2130@columbia.edu",
+    roles: ["engineering", "product", "growth", "ai/ml", "software", "vc"],
+    verticals: ["ai", "edtech", "saas", "consumer", "creator tools", "fintech"],
+    profilePic: "/photos/tensae-laki.jpg",
+    instagram: "https://www.instagram.com/tensu.lx/",
+    linkedin: "https://www.linkedin.com/in/tensae-laki-491595283/",
+    github: "https://github.com/SpectrrT",
+    connections: ["veer-chopra", "abhiram-nandiraju", "anibal-segovia", "ansh-krishna", "arm-komolhiran", "ethan-rhee", "ella-sy", "jeremy-galang", "justin-hou", "sid-rout", "rahul-arora", "naythan-chan", "joseph-jojoe", "justine-mach", "mihir-garimella"],
+  },
+
+  {
+    id: "todd-enkhbat",
+    name: "Todd Enkhbat",
+    website: "https://www.toddenkhbat.com/",
+    program: "Physics & Philosophy",
+    email: "tsogt.e@columbia.edu",
+    roles: ["engineering", "product", "research", "vc", "hardware"],
+    verticals: ["hard tech", "defense", "edtech", "climate"],
+    profilePic: "/photos/todd-enkhbat.png",
+    instagram: "https://www.instagram.com/tsokue___/",
+    twitter: "https://x.com/the_tallerpoppy",
+    linkedin: "https://www.linkedin.com/in/tsogt-enkhbat-/",
+    connections: ["naythan-chan", "justine-mach", "justin-hou", "ethan-rhee", "arm-komolhiran"],  },
 
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE

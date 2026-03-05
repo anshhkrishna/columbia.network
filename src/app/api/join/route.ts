@@ -17,6 +17,12 @@ export async function POST(request: Request) {
 
   const clean = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : undefined);
   const cleanArr = (v: unknown) => (Array.isArray(v) && v.length ? v : undefined);
+  const toUrl = (v: string | undefined, base: string) => {
+    if (!v) return undefined;
+    if (/^https?:\/\//i.test(v)) return v;
+    if (/^www\./i.test(v)) return `https://${v}`;
+    return `${base}${v.replace(/^@/, "")}`;
+  };
 
   const memberEntry: Record<string, unknown> = {
     id: slug || "new-member",
@@ -27,10 +33,10 @@ export async function POST(request: Request) {
     roles: cleanArr(payload.roles),
     verticals: cleanArr(payload.verticals),
     profilePic: clean(payload.profilePic),
-    instagram: clean(payload.instagram),
-    twitter: clean(payload.twitter),
-    linkedin: clean(payload.linkedin),
-    github: clean(payload.github),
+    instagram: toUrl(clean(payload.instagram), "https://www.instagram.com/"),
+    twitter: toUrl(clean(payload.twitter), "https://x.com/"),
+    linkedin: toUrl(clean(payload.linkedin), "https://www.linkedin.com/in/"),
+    github: toUrl(clean(payload.github), "https://github.com/"),
     connections: cleanArr(payload.connections),
   };
 
