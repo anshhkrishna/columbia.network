@@ -695,17 +695,6 @@ export const members: Member[] = [
     linkedin: "https://www.linkedin.com/in/claryssa-yuanwie",
     github: "https://github.com/claryssayuanwie",
     connections: ["alex-jerpelea", "shaina-sahu", "naythan-chan", "anay-garodia"],
-
-    id: "samvrit-rao",
-    name: "Samvrit Rao",
-    program: "Psychology & Data Science",
-    email: "svr2127@columbia.edu",
-    roles: ["product", "design", "ai/ml", "vc", "finance", "research"],
-    verticals: ["ai", "healthcare", "edtech"],
-    profilePic: "/photos/samvrit-rao.png",
-    linkedin: "https://www.linkedin.com/in/samvr/",
-    github: "https://github.com/samvrit-rao",
-    connections: ["abhinav-goel", "abhiram-nandiraju", "ansh-krishna", "armaan-agrawal", "chris-chang", "anibal-segovia", "mihir-garimella", "rahul-arora", "tanush-sawhney", "veer-chopra"],
   },
 
   {

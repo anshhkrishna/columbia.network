@@ -10,7 +10,6 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PRS = [
-  { num: 26, branch: "join/samvrit-rao-1772668328073", id: "samvrit-rao" },
   { num: 28, branch: "join/shinnyom-park-1772676236950", id: "shinnyom-park" },
   { num: 29, branch: "join/christopher-lee-1772676790998", id: "christopher-lee" },
   { num: 30, branch: "join/mukilan-rajasekar-1772677526183", id: "mukilan-rajasekar" },
