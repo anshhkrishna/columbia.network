@@ -659,11 +659,14 @@ a {
 /* Members Table */
 .members-table-container {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .members-table {
   width: 100%;
+  min-width: 400px;
   border-collapse: collapse;
   text-align: left;
   table-layout: fixed;
@@ -677,22 +680,38 @@ a {
   color: var(--foreground);
 }
 
-.members-table th:nth-child(1) { width: 28%; }
-.members-table th:nth-child(2) { width: 28%; }
-.members-table th:nth-child(3) { width: 19%; }
-.members-table th:nth-child(4) { width: 25%; padding-left: 1rem; min-width: 120px; }
+.members-table th:nth-child(1) { width: 26%; min-width: 0; }
+.members-table th:nth-child(2) { width: 26%; min-width: 0; }
+.members-table th:nth-child(3) { width: 22%; min-width: 0; }
+.members-table th:nth-child(4) { width: 26%; padding-left: 1rem; min-width: 140px; }
 
 .members-table td {
   padding: 1rem 1rem 1rem 0;
   font-size: 1rem;
   color: var(--foreground);
   vertical-align: middle;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.members-table td:nth-child(2) {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.members-table td:nth-child(3) .site-link,
+.members-table td:nth-child(3) .table-placeholder {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .members-table td:nth-child(4) {
   padding-left: 1rem;
   padding-right: 2rem;
   overflow: visible;
+  max-width: none;
 }
 
 .user-cell {
@@ -788,8 +807,8 @@ a {
 /* Social Icons */
 .social-icons {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
   align-items: center;
   min-height: 20px;
   padding: 0.25rem 0;
@@ -881,17 +900,29 @@ a {
   
   .members-table {
     table-layout: auto;
+    min-width: 320px;
+  }
+  
+  .members-table th:nth-child(1),
+  .members-table th:nth-child(2),
+  .members-table th:nth-child(3),
+  .members-table th:nth-child(4) {
+    width: auto;
   }
   
   .members-table th,
   .members-table td {
-    padding-right: 1rem;
+    padding-right: 0.75rem;
     font-size: 0.9rem;
   }
   
   .members-table th {
     font-size: 1rem;
     padding-bottom: 1rem;
+  }
+  
+  .members-table td {
+    overflow: visible;
   }
   
   .ascii-art-background {
@@ -902,7 +933,7 @@ a {
 
 @media (max-width: 480px) {
   .main-container {
-    padding: 1.25rem;
+    padding: 1rem;
     gap: 1.5rem;
   }
   
