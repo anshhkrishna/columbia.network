@@ -85,6 +85,10 @@ export default function JoinPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Request failed");
+      if (data.prError) {
+        setError(data.prError);
+        return;
+      }
       if (data.prUrl) setPrUrl(data.prUrl);
       else setPrUrl("submitted");
       setForm(INITIAL);

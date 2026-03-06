@@ -45,8 +45,14 @@ export async function POST(request: Request) {
   const ghRepo = process.env.GITHUB_REPO || process.env.GITHUB_REPO_NAME;
 
   if (!ghToken || !ghOwner || !ghRepo) {
-    console.log("Auto-PR skipped (missing env vars). Submission:", JSON.stringify(memberEntry, null, 2));
-    return NextResponse.json({ ok: true, memberEntry, prUrl: null });
+    const missing = [!ghToken && "GITHUB_TOKEN", !ghOwner && "GITHUB_OWNER", !ghRepo && "GITHUB_REPO"].filter(Boolean);
+    console.log("Auto-PR skipped (missing env vars):", missing.join(", "));
+    return NextResponse.json({
+      ok: true,
+      memberEntry,
+      prUrl: null,
+      prError: `PR creation not configured. Add these env vars on Vercel: ${missing.join(", ")}`,
+    });
   }
 
   const result = await createJoinPR({
@@ -60,7 +66,10 @@ export async function POST(request: Request) {
 
   if (result.error) {
     console.error("Auto-PR failed:", result.error);
-    return NextResponse.json({ ok: true, memberEntry, prUrl: null, prError: result.error });
+    let userMessage = result.error;
+    if (result.error.includes("404")) userMessage += " Check GITHUB_OWNER and GITHUB_REPO in Vercel.";
+    else if (result.error.includes("403") || result.error.includes("401")) userMessage += " Check GITHUB_TOKEN has repo access.";
+    return NextResponse.json({ ok: true, memberEntry, prUrl: null, prError: userMessage });
   }
 
   return NextResponse.json({ ok: true, memberEntry, prUrl: result.prUrl });
