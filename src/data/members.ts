@@ -755,6 +755,31 @@ export const members: Member[] = [
     linkedin: "https://www.linkedin.com/in/tsogt-enkhbat-/",
     connections: ["naythan-chan", "justine-mach", "justin-hou", "ethan-rhee", "arm-komolhiran"],  },
 
+  {
+    id: "esra-lepadatu",
+    name: "Esra Lepadatu",
+    program: "Econ + Psych",
+    email: "eln2128@columbia.edu",
+    roles: ["growth", "product"],
+    verticals: ["consumer"],
+    profilePic: "/photos/esra-lepadatu.png",
+    twitter: "https://x.com/esralepadatu?s=21",
+    linkedin: "https://www.linkedin.com/in/esralepadatu/",
+    connections: ["ansh-krishna", "justine-mach", "justin-hou", "naythan-chan", "sid-rout", "jeremy-galang", "ella-sy", "arm-komolhiran", "alex-jerpelea", "ravin-chutijirawong"],
+  },
+
+  {
+    id: "annie-dong",
+    name: "Annie Dong",
+    program: "Applied Statistics",
+    email: "annie@comma.vc",
+    roles: ["vc"],
+    verticals: ["consumer", "creator tools"],
+    profilePic: "/photos/annie-dong.png",
+    linkedin: "https://www.linkedin.com/in/anniedongg/",
+    connections: ["ansh-krishna", "sid-rout", "naythan-chan", "justine-mach", "joseph-jojoe", "marcus-lam", "justin-hou", "rahul-arora", "abhiram-nandiraju", "arm-komolhiran"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
