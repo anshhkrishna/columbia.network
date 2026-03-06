@@ -87,15 +87,26 @@ export async function createJoinPR({
     if (!commitRes.ok) return { prUrl: null, error: `commit: ${commitRes.status}` };
     const mainTreeSha = ((await commitRes.json()) as { tree: { sha: string } }).tree.sha;
 
-    // 3. Fetch members.ts content
+    // 3. Fetch members.ts (Contents API returns empty content for files >1MB; use Blobs API as fallback)
     const fileRes = await ghFetch(
       `https://api.github.com/repos/${owner}/${repo}/contents/${MEMBERS_PATH}.ts?ref=main`, token,
     );
     if (!fileRes.ok) return { prUrl: null, error: `file: ${fileRes.status}` };
-    const fileData = (await fileRes.json()) as { content?: string; sha?: string };
-    if (!fileData.content || !fileData.sha) return { prUrl: null, error: "missing file data" };
+    const fileMeta = (await fileRes.json()) as { content?: string; sha?: string };
+    if (!fileMeta.sha) return { prUrl: null, error: "missing file sha" };
 
-    const original = Buffer.from(fileData.content, "base64").toString("utf-8");
+    let original: string;
+    if (fileMeta.content && fileMeta.content.length > 0) {
+      original = Buffer.from(fileMeta.content.replace(/\n/g, ""), "base64").toString("utf-8");
+    } else {
+      const blobRes = await ghFetch(
+        `https://api.github.com/repos/${owner}/${repo}/git/blobs/${fileMeta.sha}`, token,
+      );
+      if (!blobRes.ok) return { prUrl: null, error: `blob: ${blobRes.status}` };
+      const blobData = (await blobRes.json()) as { content?: string; encoding?: string };
+      if (!blobData.content) return { prUrl: null, error: "missing blob content" };
+      original = Buffer.from(blobData.content.replace(/\n/g, ""), "base64").toString("utf-8");
+    }
 
     // 4. Handle profile pic: decode data URL -> add image file; use /photos/ path in member entry
     const rawProfilePic = memberEntry.profilePic;
