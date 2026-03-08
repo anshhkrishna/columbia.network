@@ -139,15 +139,23 @@ export async function createJoinPR({
     const block = formatMemberEntry(finalMemberEntry);
     const updatedMembers = insertMemberIntoFile(original, block);
 
-    // 5. Build tree: members.ts + optional photo
-    const treeItems: { path: string; mode: string; type: string; sha?: string; content?: string; encoding?: string }[] = [
+    // 5. Create blob for members.ts (tree API stores content as UTF-8; use Blobs API for proper encoding)
+    const membersBlobRes = await ghFetch(
+      `https://api.github.com/repos/${owner}/${repo}/git/blobs`, token,
       {
-        path: `${MEMBERS_PATH}.ts`,
-        mode: "100644",
-        type: "blob",
-        content: Buffer.from(updatedMembers, "utf-8").toString("base64"),
-        encoding: "base64",
+        method: "POST",
+        body: JSON.stringify({
+          content: Buffer.from(updatedMembers, "utf-8").toString("base64"),
+          encoding: "base64",
+        }),
       },
+    );
+    if (!membersBlobRes.ok) return { prUrl: null, error: `members blob: ${membersBlobRes.status}` };
+    const membersBlobSha = ((await membersBlobRes.json()) as { sha: string }).sha;
+
+    // 6. Build tree: members.ts (by sha) + optional photo
+    const treeItems: { path: string; mode: string; type: string; sha?: string }[] = [
+      { path: `${MEMBERS_PATH}.ts`, mode: "100644", type: "blob", sha: membersBlobSha },
     ];
     if (imageBlobSha) {
       treeItems.push({
@@ -158,6 +166,7 @@ export async function createJoinPR({
       });
     }
 
+    // 7. Create tree
     const treeRes = await ghFetch(
       `https://api.github.com/repos/${owner}/${repo}/git/trees`, token,
       {
@@ -171,7 +180,7 @@ export async function createJoinPR({
     }
     const newTreeSha = ((await treeRes.json()) as { sha: string }).sha;
 
-    // 6. Create commit
+    // 8. Create commit
     const createCommitRes = await ghFetch(
       `https://api.github.com/repos/${owner}/${repo}/git/commits`, token,
       {
@@ -186,19 +195,30 @@ export async function createJoinPR({
     if (!createCommitRes.ok) return { prUrl: null, error: `commit: ${createCommitRes.status}` };
     const newCommitSha = ((await createCommitRes.json()) as { sha: string }).sha;
 
-    // 7. Create branch
+    // 9. Create branch
     const branchRes = await ghFetch(
       `https://api.github.com/repos/${owner}/${repo}/git/refs`, token,
       { method: "POST", body: JSON.stringify({ ref: `refs/heads/${branchName}`, sha: newCommitSha }) },
     );
     if (!branchRes.ok) return { prUrl: null, error: `branch: ${branchRes.status}` };
 
-    // 8. Create PR
+    // 10. Create PR (include full submission so you can see what they uploaded even if diff is messy)
+    const displayEntry = { ...memberEntry };
+    if (typeof displayEntry.profilePic === "string" && displayEntry.profilePic.startsWith("data:")) {
+      displayEntry.profilePic = "[data URL - photo attached]";
+    }
     const prBody = [
       `## Join request from columbia.network/join`,
       "",
       `**Name:** ${submitterName}`,
       notes ? `**Notes:** ${notes}` : "",
+      "",
+      "<details><summary>Full submitted data (click to expand)</summary>",
+      "",
+      "```json",
+      JSON.stringify(displayEntry, null, 2),
+      "```",
+      "</details>",
     ].filter(Boolean).join("\n");
 
     const prRes = await ghFetch(

@@ -780,6 +780,43 @@ export const members: Member[] = [
     connections: ["ansh-krishna", "sid-rout", "naythan-chan", "justine-mach", "joseph-jojoe", "marcus-lam", "justin-hou", "rahul-arora", "abhiram-nandiraju", "arm-komolhiran"],
   },
 
+  {
+    id: "amrutha-rao",
+    name: "Amrutha Rao",
+    website: "https://amrutharao.me/",
+    program: "Applied Math and CS",
+    email: "arr2249@columbia.edu",
+    roles: ["engineering", "ai/ml", "research", "software", "product"],
+    verticals: ["ai", "consumer", "marketplaces"],
+    profilePic: "/photos/amrutha-rao.jpg",
+    twitter: "https://x.com/amrutha_rao_",
+    linkedin: "https://www.linkedin.com/in/amrutha-rao-ab9360239/",
+    connections: ["aedin-pereira", "arm-komolhiran", "david-xiong", "ethan-rhee", "joseph-jojoe", "justin-hou", "mihir-garimella", "tanush-sawhney", "naythan-chan"],
+  },
+
+  {
+    id: "arleen-alcaraz-cano",
+    name: "Arleen Alcaraz-Cano",
+    website: "https://www.arleenaricey.live/",
+    program: "CS",
+    email: "aaa2428@barnard.edu",
+    roles: ["product", "ai/ml", "design"],
+    profilePic: "/photos/arleen-alcaraz-cano.jpg",
+    linkedin: "https://www.linkedin.com/in/arleen-alcaraz-cano/",
+  },
+
+  {
+    id: "michael-botti",
+    name: "Michael Botti",
+    program: "Operations Research",
+    email: "mrb2306@columbia.edu",
+    roles: ["growth", "finance", "ai/ml", "vc"],
+    verticals: ["fintech", "ai"],
+    profilePic: "/photos/michael-botti.gif",
+    linkedin: "https://www.linkedin.com/in/michaelbotti11/",
+    connections: ["rahul-arora", "anibal-segovia"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
