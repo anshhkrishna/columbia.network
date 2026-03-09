@@ -817,6 +817,18 @@ export const members: Member[] = [
     connections: ["rahul-arora", "anibal-segovia"],
   },
 
+  {
+    id: "zhexuan-li",
+    name: "Zhexuan Li",
+    program: "Cognitive Science + CS",
+    email: "zl3553@columbia.edu",
+    roles: ["vc", "research", "finance"],
+    verticals: ["robotics", "ai", "healthcare", "saas", "hard tech", "fintech"],
+    profilePic: "/photos/zhexuan-li.jpg",
+    linkedin: "https://www.linkedin.com/in/zhexuanli/",
+    connections: ["amrutha-rao", "annie-dong", "ella-sy", "justin-hou", "marcus-lam", "ethan-rhee", "arm-komolhiran", "ryon-roque", "naythan-chan"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
