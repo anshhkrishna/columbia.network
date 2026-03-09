@@ -829,6 +829,18 @@ export const members: Member[] = [
     connections: ["amrutha-rao", "annie-dong", "ella-sy", "justin-hou", "marcus-lam", "ethan-rhee", "arm-komolhiran", "ryon-roque", "naythan-chan"],
   },
 
+  {
+    id: "kavya-amrutham",
+    name: "Kavya Amrutham",
+    program: "Computational Biology, Cognitive Science",
+    email: "ka3041@columbia.edu",
+    roles: ["product", "design", "growth", "ai/ml", "research", "hardware", "vc"],
+    verticals: ["climate", "ai", "healthcare", "hard tech", "creator tools", "edtech", "consumer"],
+    profilePic: "/photos/kavya-amrutham.png",
+    linkedin: "https://www.linkedin.com/in/kavyaamru/",
+    connections: ["abhiram-nandiraju", "aiden-gandhi", "alex-jerpelea", "amrutha-rao", "anay-garodia", "anibal-segovia", "annie-dong", "ansh-krishna", "arm-komolhiran", "armaan-agrawal", "ella-sy", "david-xiong", "todd-enkhbat", "tanush-sawhney", "sid-rout", "ryon-roque", "shaina-sahu", "ravin-chutijirawong", "joseph-jojoe", "justine-mach", "esra-lepadatu", "marcus-lam", "rahul-arora", "aedin-pereira", "justin-hou"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
