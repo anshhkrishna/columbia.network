@@ -841,6 +841,12 @@ export const members: Member[] = [
     connections: ["abhiram-nandiraju", "aiden-gandhi", "alex-jerpelea", "amrutha-rao", "anay-garodia", "anibal-segovia", "annie-dong", "ansh-krishna", "arm-komolhiran", "armaan-agrawal", "ella-sy", "david-xiong", "todd-enkhbat", "tanush-sawhney", "sid-rout", "ryon-roque", "shaina-sahu", "ravin-chutijirawong", "joseph-jojoe", "justine-mach", "esra-lepadatu", "marcus-lam", "rahul-arora", "aedin-pereira", "justin-hou"],
   },
 
+  {
+    id: "piyush-nawade",
+    name: "piyush nawade",
+    profilePic: "/photos/piyush-nawade.jpg",
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
