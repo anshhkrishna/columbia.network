@@ -854,6 +854,17 @@ export const members: Member[] = [
     connections: ["aedin-pereira", "james-karmacharya", "tanish-sonone"],
   },
 
+  {
+    id: "ahmed-ashraf",
+    name: "Ahmed Ashraf",
+    program: "CS",
+    email: "aaa2419@columbia.edu",
+    roles: ["engineering", "ai/ml", "research"],
+    verticals: ["ai", "hard tech"],
+    profilePic: "/photos/ahmed-ashraf.jpg",
+    linkedin: "https://www.linkedin.com/in/ahmedashrafa/",
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
