@@ -865,6 +865,20 @@ export const members: Member[] = [
     linkedin: "https://www.linkedin.com/in/ahmedashrafa/",
   },
 
+  {
+    id: "eliyjtvqjbolnessnrtaybi",
+    name: "eLIYJtVQJbOlnEssNRtAybi",
+    website: "jXkLIlkiMoseUnntfk",
+    program: "GlhkuUDKcpisXLVX",
+    email: "i.q.oga.v.o.ti.853@gmail.com",
+    profilePic: "xtHbJEcMjMAlnRghLh",
+    instagram: "https://www.instagram.com/wdplnRkXbRqJMvXTdA",
+    twitter: "https://x.com/rDrVgXeACwnjkpFWHjIdLWOq",
+    linkedin: "https://www.linkedin.com/in/ahKVVDhOJHorQoCbVYHSnV",
+    github: "https://github.com/dONFNWPGGtlSyNFKEi",
+    connections: ["aiden-gandhi"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
