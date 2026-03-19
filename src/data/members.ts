@@ -865,6 +865,20 @@ export const members: Member[] = [
     linkedin: "https://www.linkedin.com/in/ahmedashrafa/",
   },
 
+  {
+    id: "kayna",
+    name: "Kayna",
+    website: "kayna.ai",
+    program: "cog sci, Econ, poli Sci",
+    email: "kh3443@columbia.edu",
+    roles: ["design", "product", "vc"],
+    verticals: ["healthcare", "saas", "consumer"],
+    profilePic: "/photos/kayna.jpg",
+    instagram: "https://www.instagram.com/kaynahuang",
+    twitter: "https://x.com/kayna_xyz",
+    connections: ["david-xiong", "joseph-jojoe", "eddy-xu"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
