@@ -876,6 +876,9 @@ export const members: Member[] = [
     profilePic: "/photos/grace-li.jpg",
     instagram: "https://www.instagram.com/ggracelii/",
     linkedin: "https://www.linkedin.com/in/ggracelii",
+  },
+
+  {
     id: "kayna",
     name: "Kayna",
     website: "https://kayna.ai",
@@ -887,7 +890,7 @@ export const members: Member[] = [
     instagram: "https://www.instagram.com/kaynahuang",
     twitter: "https://x.com/kayna_xyz",
     connections: ["david-xiong", "joseph-jojoe", "eddy-xu"],
-  },
+  }
 
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
