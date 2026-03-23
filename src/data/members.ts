@@ -865,6 +865,19 @@ export const members: Member[] = [
     linkedin: "https://www.linkedin.com/in/ahmedashrafa/",
   },
 
+  {
+    id: "grace-li",
+    name: "Grace Li",
+    website: "ggracelii.com",
+    program: "cs, math, dance",
+    email: "grace.li2@columbia.edu",
+    roles: ["engineering", "software", "research"],
+    verticals: ["saas", "ai", "consumer", "fintech"],
+    profilePic: "/photos/grace-li.jpg",
+    instagram: "https://www.instagram.com/ggracelii/",
+    linkedin: "https://www.linkedin.com/in/ggracelii",
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
