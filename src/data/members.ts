@@ -890,7 +890,22 @@ export const members: Member[] = [
     instagram: "https://www.instagram.com/kaynahuang",
     twitter: "https://x.com/kayna_xyz",
     connections: ["david-xiong", "joseph-jojoe", "eddy-xu"],
-  }
+  },
+
+  {
+    id: "ashley-garcia",
+    name: "Ashley Garcia",
+    website: "https://ashley-eta.vercel.app/",
+    program: "CS",
+    email: "ag4647@columbia.edu",
+    roles: ["engineering", "software", "ai/ml"],
+    verticals: ["fintech", "ai", "saas"],
+    profilePic: "/photos/ashley-garcia.jpg",
+    instagram: "https://www.instagram.com/ash_grc14",
+    twitter: "https://x.com/ash_grc14",
+    linkedin: "https://www.linkedin.com/in/ashley-garcia1",
+    github: "https://github.com/ashleyGarcia0405",
+  },
 
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
