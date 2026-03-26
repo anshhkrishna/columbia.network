@@ -890,7 +890,7 @@ export const members: Member[] = [
     instagram: "https://www.instagram.com/kaynahuang",
     twitter: "https://x.com/kayna_xyz",
     connections: ["david-xiong", "joseph-jojoe", "eddy-xu"],
-  }
+  },
 
   {
     id: "ashley-garcia",
