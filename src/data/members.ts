@@ -907,6 +907,19 @@ export const members: Member[] = [
     github: "https://github.com/ashleyGarcia0405",
   },
 
+  {
+    id: "arjun-r-kumaar",
+    name: "Arjun R Kumaar",
+    website: "www.linkedin.com/in/arjunrkumaar",
+    program: "Financial Economics",
+    email: "ar4861@columbia.edu",
+    roles: ["design", "finance", "growth", "research"],
+    verticals: ["fintech", "ai", "marketplaces", "saas", "robotics"],
+    profilePic: "/photos/arjun-r-kumaar.jpg",
+    linkedin: "https://www.linkedin.com/in/arjunrkumaar",
+    connections: ["piyush-nawade"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
