@@ -907,6 +907,20 @@ export const members: Member[] = [
     github: "https://github.com/ashleyGarcia0405",
   },
 
+  {
+    id: "chgjiplgnmncqvboayr",
+    name: "ChgJipLGNMnCqvBOAyr",
+    website: "hDblvZPKqvkyawXXjavywUH",
+    program: "DvHRhcmPEZDXATDigacW",
+    email: "ez.ip.es.o.ya.r.a267@gmail.com",
+    profilePic: "vKdNQvFwVsECYjwheX",
+    instagram: "https://www.instagram.com/jPdTpJYWrVmwIdxSpya",
+    twitter: "https://x.com/KUfwsDriLnMNPWVzQoGu",
+    linkedin: "https://www.linkedin.com/in/EIJmuaNpcrroDftFQCbBAjpX",
+    github: "https://github.com/sRFmcGTDlQSWnlabil",
+    connections: ["claryssa-tarigan"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
