@@ -920,6 +920,15 @@ export const members: Member[] = [
     connections: ["piyush-nawade"],
   },
 
+  {
+    id: "aryan-mahajan",
+    name: "aryan mahajan",
+    website: "https://aryanma.github.io/",
+    program: "cs",
+    email: "am6289@columbia.edu",
+    profilePic: "/photos/aryan-mahajan.heic",
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
