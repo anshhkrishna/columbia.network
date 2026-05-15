@@ -892,6 +892,20 @@ export const members: Member[] = [
     connections: ["david-xiong", "joseph-jojoe", "eddy-xu"],
   }
 
+  {
+    id: "goqtajqxufwvffgmer",
+    name: "goQTaJQXUFwVFFgmER",
+    website: "mKwxVBLhsTGkAuggA",
+    program: "KZDjSfgOsFWNKGUv",
+    email: "odi.jequri050@gmail.com",
+    profilePic: "cTxLDzizSlqTxnbZzpv",
+    instagram: "https://www.instagram.com/hVzeWJxnujHnMtQOPz",
+    twitter: "https://x.com/eaVYHSBIZbkScjLh",
+    linkedin: "https://www.linkedin.com/in/QQwehJILkEutPEMzkNXR",
+    github: "https://github.com/rlyksEPWsxaMxtmfku",
+    connections: ["naythan-chan"],
+  },
+
   // ============================================
   // ADD YOUR ENTRY ABOVE THIS LINE
   // ============================================
